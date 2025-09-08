@@ -58,13 +58,9 @@
 </body>
 
 <script>
-    //Animation 
-    let waitingScreen= document.getElementById('waitingScreen') 
+    //Animation  
     let innerWaitingScreen= document.getElementById('innerWaitingScreen') //ảnh Gif waiting
     let check2=0 //biến để thoát hàm resetGif
-    let introduction= document.getElementById('introduction');
-    let div_intro= document.getElementById('div_intro')
-
 
     //do Gif hay bị lỗi nên phải tạo hàm để reset lại
     let resetGif=()=>{
@@ -79,6 +75,9 @@
 
     //hàm thoát waiting Screen
     let waitingAnimation=()=>{
+        let waitingScreen= document.getElementById('waitingScreen')
+        let introduction= document.getElementById('introduction');
+
         setTimeout(()=>{
             check2=1; 
             waitingScreen.innerHTML=''; waitingScreen.style.width='0px'; waitingScreen.style.height='0px'; introduction.style.left='20%';
