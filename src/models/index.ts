@@ -21,5 +21,3 @@ export * from './appointment';
 // Medical Record Models
 export * from './medical-record';
 
-// Notification Models
-export * from './notification';

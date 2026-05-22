@@ -1,5 +1,4 @@
 import React from 'react';
-import { useModel } from 'umi';
 import defaultSettings from '../../../config/defaultSettings';
 import AvatarDropdown from './AvatarDropdown';
 import styles from './index.less';
@@ -7,8 +6,6 @@ import styles from './index.less';
 export type SiderTheme = 'light' | 'dark';
 
 const GlobalHeaderRight: React.FC = () => {
-	const { initialState } = useModel('@@initialState');
-
 	return (
 		<div className={styles.right}>
 			{/* <ModuleSwitch /> */}
