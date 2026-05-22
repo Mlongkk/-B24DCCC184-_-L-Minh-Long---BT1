@@ -100,7 +100,12 @@ export default [
 		component: './MedicalRecords/MedicalRecordsTimeline',
 		icon: 'FileTextOutlined',
 	},
-
+	{
+		path: '/users',
+		name: 'Quản lý người dùng',
+		component: './Users/UserList',
+		icon: 'TeamOutlined',
+	},
 	{
 		path: '/notifications',
 		name: 'Thông báo',
