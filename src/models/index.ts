@@ -6,9 +6,6 @@
 // Auth Models
 export * from './auth';
 
-// User Models
-export * from './user';
-
 // Customer Models
 export * from './customer';
 
