@@ -1,6 +1,7 @@
 import { Card } from 'antd';
 import './components/style.less';
 import { unitName } from '@/services/base/constant';
+import Dashboard from '@/pages/Dashboard/Dashboard';
 
 const TrangChu = () => {
 	return (
@@ -23,7 +24,9 @@ const TrangChu = () => {
 				<h1 className='title'>THỰC HÀNH LẬP TRÌNH WEB</h1>
 				<h2 className='sub-title'>{unitName.toUpperCase()}</h2>
 			</div>
+			<Dashboard />
 		</Card>
+		
 	);
 };
 

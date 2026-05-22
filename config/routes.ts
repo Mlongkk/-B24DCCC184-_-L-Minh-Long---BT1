@@ -56,12 +56,12 @@ export default [
 	},
 
 	// ===== BenhVienABC Admin/Doctor Routes =====
-	{
-		path: '/dashboard',
-		name: 'Dashboard',
-		component: './Dashboard/Dashboard',
-		icon: 'DashboardOutlined',
-	},
+	// {
+	// 	path: '/dashboard',
+	// 	name: 'Dashboard',
+	// 	component: './Dashboard/Dashboard',
+	// 	icon: 'DashboardOutlined',
+	// },
 
 	// {
 	// 	path: '/customers',

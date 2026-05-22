@@ -51,12 +51,21 @@ const UserList: React.FC = () => {
                 page: pagination.current,
                 pageSize: pagination.pageSize,
             });
+
+            console.log('API Response:', response);
+
             // Ensure data is always an array with roles field
-            const usersData = Array.isArray(response.data) ? response.data : response.data?.data || [];
-            const processedUsers = usersData.map((user: any) => ({
-                ...user,
-                roles: user.roles || [],
-            }));
+            let usersData = Array.isArray(response.data) ? response.data : response.data?.data || [];
+
+            const processedUsers = usersData.map((user: any) => {
+                console.log('User data:', user);
+                return {
+                    ...user,
+                    roles: Array.isArray(user.roles) ? user.roles : user.role ? [user.role] : [],
+                };
+            });
+
+            console.log('Processed users:', processedUsers);
             setUsers(processedUsers);
             setPagination((prev) => ({ ...prev, total: response.total }));
         } catch (error) {
