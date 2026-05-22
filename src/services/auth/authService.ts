@@ -42,12 +42,34 @@ class AuthService {
                 code,
                 state,
             });
-            const { accessToken, user } = response.data;
 
-            localStorage.setItem(this.storageKey, accessToken);
+            // Handle both token and accessToken from backend
+            const backendToken = response.data.token || response.data.accessToken;
+            const backendUser = response.data.user;
+
+            // Convert backend user format to frontend format
+            const user: User = {
+                id: backendUser.id,
+                username: backendUser.username,
+                email: backendUser.email,
+                fullName: backendUser.full_name || backendUser.fullName || backendUser.username,
+                avatar: backendUser.avatar,
+                roles: backendUser.roles ? (Array.isArray(backendUser.roles) ? backendUser.roles : [backendUser.roles]) : (backendUser.role ? [backendUser.role] : []),
+                permissions: backendUser.permissions || [],
+                isActive: backendUser.isActive !== undefined ? backendUser.isActive : true,
+                createdAt: backendUser.createdAt || new Date().toISOString(),
+                updatedAt: backendUser.updatedAt || new Date().toISOString(),
+            };
+
+            localStorage.setItem(this.storageKey, backendToken);
             localStorage.setItem(this.userKey, JSON.stringify(user));
 
-            return response.data;
+            return {
+                accessToken: backendToken,
+                refreshToken: response.data.refreshToken || '',
+                user,
+                expiresIn: response.data.expiresIn || 3600,
+            };
         } catch (error) {
             console.error('Keycloak login failed', error);
             throw error;
@@ -60,12 +82,35 @@ class AuthService {
     async login(credentials: LoginRequest): Promise<AuthResponse> {
         try {
             const response = await this.http.post('/auth/login', credentials);
-            const { accessToken, user } = response.data;
 
-            localStorage.setItem(this.storageKey, accessToken);
+            // Backend trả về format: { token, user: { role, full_name, ... } }
+            // Frontend đợi: { accessToken, user: { roles: [], permissions: [], ... } }
+            const backendToken = response.data.token || response.data.accessToken;
+            const backendUser = response.data.user;
+
+            // Convert backend user format to frontend format
+            const user: User = {
+                id: backendUser.id,
+                username: backendUser.username,
+                email: backendUser.email,
+                fullName: backendUser.full_name || backendUser.fullName || backendUser.username,
+                avatar: backendUser.avatar,
+                roles: backendUser.roles ? (Array.isArray(backendUser.roles) ? backendUser.roles : [backendUser.roles]) : (backendUser.role ? [backendUser.role] : []),
+                permissions: backendUser.permissions || [],
+                isActive: backendUser.isActive !== undefined ? backendUser.isActive : true,
+                createdAt: backendUser.createdAt || new Date().toISOString(),
+                updatedAt: backendUser.updatedAt || new Date().toISOString(),
+            };
+
+            localStorage.setItem(this.storageKey, backendToken);
             localStorage.setItem(this.userKey, JSON.stringify(user));
 
-            return response.data;
+            return {
+                accessToken: backendToken,
+                refreshToken: response.data.refreshToken || '',
+                user,
+                expiresIn: response.data.expiresIn || 3600,
+            };
         } catch (error) {
             console.error('Login failed', error);
             throw error;
@@ -76,7 +121,7 @@ class AuthService {
      * Register new user
      * Convert frontend camelCase to backend snake_case
      */
-    async register(data: RegisterRequest): Promise<any> {
+    async register(data: RegisterRequest): Promise<AuthResponse> {
         try {
             // Convert to backend format (snake_case)
             const backendPayload = {
@@ -95,6 +140,38 @@ class AuthService {
 
             const response = await this.http.post('/auth/register', backendPayload);
             console.log('✅ Register success:', response.data);
+
+            // Backend có thể trả về token sau register hoặc không
+            // Nếu có token → auto-login user
+            if (response.data.token) {
+                const backendToken = response.data.token;
+                const backendUser = response.data.user;
+
+                const user: User = {
+                    id: backendUser.id,
+                    username: backendUser.username,
+                    email: backendUser.email,
+                    fullName: backendUser.full_name || backendUser.fullName || backendUser.username,
+                    avatar: backendUser.avatar,
+                    roles: backendUser.roles ? (Array.isArray(backendUser.roles) ? backendUser.roles : [backendUser.roles]) : (backendUser.role ? [backendUser.role] : []),
+                    permissions: backendUser.permissions || [],
+                    isActive: backendUser.isActive !== undefined ? backendUser.isActive : true,
+                    createdAt: backendUser.createdAt || new Date().toISOString(),
+                    updatedAt: backendUser.updatedAt || new Date().toISOString(),
+                };
+
+                localStorage.setItem(this.storageKey, backendToken);
+                localStorage.setItem(this.userKey, JSON.stringify(user));
+
+                return {
+                    accessToken: backendToken,
+                    refreshToken: response.data.refreshToken || '',
+                    user,
+                    expiresIn: response.data.expiresIn || 3600,
+                };
+            }
+
+            // Nếu backend không trả về token → return response.data as-is
             return response.data;
         } catch (error: any) {
             console.error('❌ Register API error:');

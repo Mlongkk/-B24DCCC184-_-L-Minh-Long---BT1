@@ -4,7 +4,9 @@ export default [
 	{
 		path: '/',
 		component: './RootPage',
-		hideInMenu: true,
+		name: 'Trang chủ',
+		icon: 'HomeOutlined',
+		hideInMenu: false,
 	},
 	// ===== Authentication Routes =====
 	{
@@ -54,11 +56,10 @@ export default [
 	},
 
 	// ===== BenhVienABC Admin/Doctor Routes =====
+	// Redirect /dashboard → / (HomePage sẽ render Dashboard dựa trên role)
 	{
 		path: '/dashboard',
-		name: 'Bảng điều khiển',
-		component: './Dashboard/Dashboard',
-		icon: 'DashboardOutlined',
+		redirect: '/',
 	},
 
 	{
@@ -108,12 +109,10 @@ export default [
 	},
 
 	// ===== Customer Routes =====
+	// Redirect /customer-dashboard → / (HomePage sẽ render CustomerDashboard dựa trên role)
 	{
 		path: '/customer-dashboard',
-		name: 'Trang chủ',
-		component: './CustomerDashboard/CustomerDashboard',
-		icon: 'HomeOutlined',
-		hideInMenu: false,
+		redirect: '/',
 	},
 
 	// ===== Error & Fallback Routes =====

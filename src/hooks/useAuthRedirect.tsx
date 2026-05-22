@@ -4,7 +4,7 @@ import authService from '@/services/auth/authService';
 
 /**
  * Utility function - Lấy dashboard path dựa trên user role
- * @returns path phù hợp với role (CUSTOMER → /customer-dashboard, ADMIN/VET → /dashboard)
+ * Tất cả roles sẽ redirect về '/' (HomePage sẽ render dashboard phù hợp)
  */
 export const getDashboardPath = (): string => {
     const user = authService.getCurrentUser();
@@ -13,18 +13,9 @@ export const getDashboardPath = (): string => {
         return '/auth/login';
     }
 
-    // Nếu là CUSTOMER → customer dashboard
-    if (user.roles.includes('CUSTOMER')) {
-        return '/customer-dashboard';
-    }
-
-    // Nếu là ADMIN hoặc VET (DOCTOR) → admin dashboard
-    if (user.roles.includes('ADMIN') || user.roles.includes('VET')) {
-        return '/dashboard';
-    }
-
-    // Default: customer dashboard
-    return '/customer-dashboard';
+    // Tất cả user roles (ADMIN, VET, CUSTOMER) → home page
+    // HomePage sẽ tự động detect role và render dashboard phù hợp
+    return '/';
 };
 
 /**
