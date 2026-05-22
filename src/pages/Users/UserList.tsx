@@ -28,17 +28,18 @@ import {
     UserOutlined,
 } from '@ant-design/icons';
 import userService from '@/services/users/userService';
-import { User, UserRole } from '@/models/user';
+import { UserRole } from '@/models/auth';
+import { UserProfile } from '@/models/user';
 import styles from './UserList.less';
 
 const UserList: React.FC = () => {
-    const [users, setUsers] = useState<User[]>([]);
+    const [users, setUsers] = useState<UserProfile[]>([]);
     const [loading, setLoading] = useState(false);
     const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
     const [searchText, setSearchText] = useState('');
     const [roleFilter, setRoleFilter] = useState<UserRole | undefined>();
     const [drawerVisible, setDrawerVisible] = useState(false);
-    const [selectedUser, setSelectedUser] = useState<User | null>(null);
+    const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
     const [form] = Form.useForm();
 
     const fetchUsers = useCallback(async () => {
@@ -64,7 +65,7 @@ const UserList: React.FC = () => {
         fetchUsers();
     }, [fetchUsers]);
 
-    const handleEdit = (user: User) => {
+    const handleEdit = (user: UserProfile) => {
         setSelectedUser(user);
         form.setFieldsValue({
             email: user.email,
@@ -109,7 +110,7 @@ const UserList: React.FC = () => {
         switch (role) {
             case UserRole.ADMIN:
                 return 'red';
-            case UserRole.DOCTOR:
+            case UserRole.VET:
                 return 'blue';
             case UserRole.CUSTOMER:
                 return 'green';
@@ -122,7 +123,7 @@ const UserList: React.FC = () => {
         switch (role) {
             case UserRole.ADMIN:
                 return 'Quản trị viên';
-            case UserRole.DOCTOR:
+            case UserRole.VET:
                 return 'Bác sĩ';
             case UserRole.CUSTOMER:
                 return 'Khách hàng';
@@ -135,7 +136,7 @@ const UserList: React.FC = () => {
         {
             title: 'Tên người dùng',
             key: 'username',
-            render: (_: any, record: User) => (
+            render: (_: any, record: UserProfile) => (
                 <div className={styles.userCell}>
                     <Avatar
                         size={40}
@@ -211,7 +212,7 @@ const UserList: React.FC = () => {
             title: 'Hành động',
             key: 'action',
             width: 150,
-            render: (_: any, record: User) => (
+            render: (_: any, record: UserProfile) => (
                 <Space size='small'>
                     <Tooltip title='Sửa'>
                         <Button
@@ -276,7 +277,7 @@ const UserList: React.FC = () => {
                                 }}
                                 options={[
                                     { label: 'Quản trị viên', value: UserRole.ADMIN },
-                                    { label: 'Bác sĩ', value: UserRole.DOCTOR },
+                                    { label: 'Bác sĩ', value: UserRole.VET },
                                     { label: 'Khách hàng', value: UserRole.CUSTOMER },
                                 ]}
                             />
@@ -373,7 +374,7 @@ const UserList: React.FC = () => {
                                     placeholder='Chọn vai trò'
                                     options={[
                                         { label: 'Quản trị viên', value: UserRole.ADMIN },
-                                        { label: 'Bác sĩ', value: UserRole.DOCTOR },
+                                        { label: 'Bác sĩ', value: UserRole.VET },
                                         { label: 'Khách hàng', value: UserRole.CUSTOMER },
                                     ]}
                                 />

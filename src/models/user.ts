@@ -1,29 +1,22 @@
 /**
  * User Models
  * Định nghĩa các kiểu dữ liệu cho người dùng
+ * Note: User và UserRole được import từ models/auth.ts để tránh xung đột
  */
 
-export enum UserRole {
-    ADMIN = 'ADMIN',
-    DOCTOR = 'DOCTOR',
-    CUSTOMER = 'CUSTOMER',
-}
+import { User, UserRole } from './auth';
 
-export interface User {
-    id: string;
-    username: string;
-    email: string;
-    fullName: string;
+// Re-export for convenience
+export type { User };
+export { UserRole };
+
+// Extended User interface for user management views with additional fields
+export interface UserProfile extends User {
     phone?: string;
-    avatar?: string;
-    roles: UserRole[];
-    createdAt: string;
-    updatedAt: string;
-    isActive: boolean;
 }
 
 export interface UserListResponse {
-    data: User[];
+    data: UserProfile[];
     total: number;
     page: number;
     pageSize: number;

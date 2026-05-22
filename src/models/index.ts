@@ -6,8 +6,8 @@
 // Auth Models
 export * from './auth';
 
-// User Models
-export * from './user';
+// User Models (excluding User and UserRole which conflict with auth.ts)
+export type { UpdateUserRequest, UserListResponse, UserSearchFilters } from './user';
 
 // Customer Models
 export * from './customer';

@@ -56,18 +56,19 @@ export default [
 	},
 
 	// ===== BenhVienABC Admin/Doctor Routes =====
-	// Redirect /dashboard → / (HomePage sẽ render Dashboard dựa trên role)
 	{
 		path: '/dashboard',
-		redirect: '/',
+		name: 'Dashboard',
+		component: './Dashboard/Dashboard',
+		icon: 'DashboardOutlined',
 	},
 
-	{
-		path: '/customers',
-		name: 'Quản lý khách hàng',
-		component: './Customers/CustomerList',
-		icon: 'UserOutlined',
-	},
+	// {
+	// 	path: '/customers',
+	// 	name: 'Quản lý khách hàng',
+	// 	component: './Customers/CustomerList',
+	// 	icon: 'UserOutlined',
+	// },
 
 	{
 		path: '/pets',
@@ -106,12 +107,7 @@ export default [
 		component: './Users/UserList',
 		icon: 'TeamOutlined',
 	},
-	{
-		path: '/notifications',
-		name: 'Thông báo',
-		component: './NotificationCenter/NotificationCenter',
-		icon: 'BellOutlined',
-	},
+
 
 	// ===== Customer Routes =====
 	// Redirect /customer-dashboard → / (HomePage sẽ render CustomerDashboard dựa trên role)
