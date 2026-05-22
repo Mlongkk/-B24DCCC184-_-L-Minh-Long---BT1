@@ -101,7 +101,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
 					}}
 				/>
 				<div className={styles.profileInfo}>
-					<Text strong style={{ fontSize: '16px', display: 'block', marginBottom: '4px', color: '#F0F2F5' }}>
+					<Text strong style={{ fontSize: '16px', display: 'block', marginBottom: '4px', color: '#1890ff' }}>
 						{fullName}
 					</Text>
 					<Text type='secondary' style={{ fontSize: '12px', display: 'block' }}>
@@ -144,6 +144,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
 						style={{
 							backgroundColor: '#1890ff',
 							fontWeight: 'bold',
+							color: '#fff',
 						}}
 					/>
 					<span className={`${styles.name}`}>{fullName}</span>

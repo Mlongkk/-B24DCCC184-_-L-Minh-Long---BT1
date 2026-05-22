@@ -211,15 +211,6 @@ const UserList: React.FC = () => {
                 ),
         },
         {
-            title: 'Trạng thái',
-            dataIndex: 'isActive',
-            key: 'isActive',
-            width: 120,
-            render: (isActive: boolean) => (
-                <Badge status={isActive ? 'success' : 'error'} text={isActive ? 'Hoạt động' : 'Vô hiệu'} />
-            ),
-        },
-        {
             title: 'Hành động',
             key: 'action',
             width: 150,
