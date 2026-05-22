@@ -66,7 +66,7 @@ export default defineConfig({
 	// mfsu: {},
 	webpack5: {},
 	define: Object.entries(process.env).reduce((result, [key, value]) => {
-		if (key.startsWith('APP_CONFIG_')) {
+		if (key.startsWith('APP_CONFIG_') || key.startsWith('REACT_APP_')) {
 			return {
 				...result,
 				[key]: value,

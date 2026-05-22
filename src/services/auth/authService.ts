@@ -1,7 +1,8 @@
 import axios, { AxiosInstance } from 'axios';
 import { User, AuthResponse, LoginRequest, Permission_Codes } from '@/models/auth';
 
-const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+// Hardcode Render URL - không dùng env var vì UmiJS hash mode không inject env vars
+const API_BASE = 'https://ript1307-nhom-4-kthp-backend.onrender.com/api';
 
 interface RegisterRequest {
     username: string;
@@ -18,7 +19,7 @@ class AuthService {
     constructor() {
         this.http = axios.create({
             baseURL: API_BASE,
-            timeout: 10000,
+            timeout: 30000, // Tăng timeout từ 10s lên 30s vì Render server có thể slow
         });
 
         // Add token to requests
@@ -75,19 +76,24 @@ class AuthService {
      */
     async register(data: RegisterRequest): Promise<any> {
         try {
-            console.log('Register API call to:', `${API_BASE}/auth/register`);
+            console.log('=== REGISTER API DEBUG ===');
+            console.log('API_BASE:', API_BASE);
+            console.log('Full URL:', `${API_BASE}/auth/register`);
+            console.log('Process.env.REACT_APP_API_URL:', process.env.REACT_APP_API_URL);
             console.log('Register payload:', data);
 
             const response = await this.http.post('/auth/register', data);
-            console.log('Register response:', response.data);
+            console.log('✅ Register success:', response.data);
             return response.data;
         } catch (error: any) {
-            console.error('Register API error:', {
-                status: error?.response?.status,
-                statusText: error?.response?.statusText,
-                data: error?.response?.data,
-                url: error?.config?.url,
-            });
+            console.error('❌ Register API error:');
+            console.error('Status:', error?.response?.status);
+            console.error('Status Text:', error?.response?.statusText);
+            console.error('Error Data:', error?.response?.data);
+            console.error('Error Message:', error?.message);
+            console.error('Request URL:', error?.config?.url);
+            console.error('Request Method:', error?.config?.method);
+            console.error('Full Error:', error);
             throw error;
         }
     }

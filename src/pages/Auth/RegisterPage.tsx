@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, Card, Divider, Row, Col, message } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
 import { useHistory } from 'umi';
@@ -17,6 +17,13 @@ const RegisterPage: React.FC = () => {
     const [form] = Form.useForm();
     const history = useHistory();
     const [loading, setLoading] = useState(false);
+
+    // Debug: Log API configuration on component mount
+    useEffect(() => {
+        console.log('=== RegisterPage Environment ===');
+        console.log('REACT_APP_API_URL:', process.env.REACT_APP_API_URL);
+        console.log('NODE_ENV:', process.env.NODE_ENV);
+    }, []);
 
     /**
      * Handle user registration

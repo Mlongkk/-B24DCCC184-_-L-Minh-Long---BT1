@@ -8,7 +8,7 @@ import {
 } from '@/models/customer';
 import authService from '@/services/auth/authService';
 
-const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+const API_BASE = 'https://ript1307-nhom-4-kthp-backend.onrender.com/api';
 
 class CustomerService {
     private http: AxiosInstance;
