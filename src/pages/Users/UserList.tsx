@@ -84,10 +84,9 @@ const UserList: React.FC = () => {
     const handleEdit = (user: UserProfile) => {
         setSelectedUser(user);
         form.setFieldsValue({
-            email: user.email,
             fullName: user.fullName,
             phone: user.phone,
-            roles: user.roles || [],
+            roles: user.roles?.[0], // Get first role from array as string
         });
         setDrawerVisible(true);
     };
@@ -106,19 +105,12 @@ const UserList: React.FC = () => {
         if (!selectedUser) return;
 
         try {
-            console.log('Updating user with data:', {
-                id: selectedUser.id,
-                payload: {
-                    fullName: values.fullName,
-                    phone: values.phone,
-                    roles: values.roles,
-                }
-            });
+            console.log('Form values:', values);
 
             const response = await userService.updateUser(selectedUser.id, {
                 fullName: values.fullName,
                 phone: values.phone,
-                roles: values.roles,
+                roles: values.roles ? [values.roles] : [], // Convert string to array
             });
 
             console.log('Update response:', response);
@@ -393,7 +385,6 @@ const UserList: React.FC = () => {
                                 rules={[{ required: true, message: 'Vui lòng chọn vai trò' }]}
                             >
                                 <Select
-                                    mode='multiple'
                                     placeholder='Chọn vai trò'
                                     options={[
                                         { label: 'Quản trị viên', value: UserRole.ADMIN },

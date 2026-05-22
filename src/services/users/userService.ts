@@ -58,14 +58,21 @@ class UserService {
      */
     async updateUser(id: string, data: UpdateUserRequest): Promise<User> {
         try {
-            // Map frontend format to backend format (snake_case)
-            const payload = {
-                full_name: data.fullName,
-                phone: data.phone,
-                role: data.roles?.[0], // Backend expects single role, not array
-            };
+            // Handle roles: if it's an array, take first element; if it's a string, use it as-is
+            let roleValue = '';
+            if (Array.isArray(data.roles) && data.roles.length > 0) {
+                roleValue = data.roles[0];
+            } else if (typeof data.roles === 'string') {
+                roleValue = data.roles;
+            }
+
+            // Only include role if it's provided
+            if (roleValue) {
+                payload.role = roleValue;
+            }
 
             console.log('Sending to backend:', payload);
+            console.log('Role value:', roleValue, 'Type:', typeof roleValue);
 
             const response = await this.http.put(`/${id}`, payload);
 
