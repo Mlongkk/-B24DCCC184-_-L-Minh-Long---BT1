@@ -58,7 +58,19 @@ class UserService {
      */
     async updateUser(id: string, data: UpdateUserRequest): Promise<User> {
         try {
-            const response = await this.http.put(`/${id}`, data);
+            // Map frontend format to backend format (snake_case)
+            const payload = {
+                full_name: data.fullName,
+                phone: data.phone,
+                role: data.roles?.[0], // Backend expects single role, not array
+            };
+
+            console.log('Sending to backend:', payload);
+
+            const response = await this.http.put(`/${id}`, payload);
+
+            console.log('Response from backend:', response.data);
+
             return response.data;
         } catch (error) {
             console.error('Failed to update user', error);

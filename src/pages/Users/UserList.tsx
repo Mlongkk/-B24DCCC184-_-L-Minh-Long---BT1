@@ -106,18 +106,30 @@ const UserList: React.FC = () => {
         if (!selectedUser) return;
 
         try {
-            await userService.updateUser(selectedUser.id, {
-                email: values.email,
+            console.log('Updating user with data:', {
+                id: selectedUser.id,
+                payload: {
+                    fullName: values.fullName,
+                    phone: values.phone,
+                    roles: values.roles,
+                }
+            });
+
+            const response = await userService.updateUser(selectedUser.id, {
                 fullName: values.fullName,
                 phone: values.phone,
                 roles: values.roles,
             });
+
+            console.log('Update response:', response);
+
             message.success('Cập nhật người dùng thành công');
             setDrawerVisible(false);
             form.resetFields();
             setSelectedUser(null);
             fetchUsers();
         } catch (error: any) {
+            console.error('Update error:', error);
             message.error(error.response?.data?.message || 'Lỗi khi cập nhật người dùng');
         }
     };

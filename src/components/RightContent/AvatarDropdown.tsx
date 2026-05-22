@@ -147,7 +147,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
 							color: '#fff',
 						}}
 					/>
-					<span className={`${styles.name}`}>{fullName}</span>
+					<span className={`${styles.name}`} style={{color: "#F0F2F5"}}>{fullName}</span>
 				</span>
 			</HeaderDropdown>
 		</>

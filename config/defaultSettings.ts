@@ -21,7 +21,7 @@ const Settings: LayoutSettings & {
 	primaryColor: process.env.APP_CONFIG_PRIMARY_COLOR || '#CC0D00',
 	secondaryColor: process.env.APP_CONFIG_SECONDARY_COLOR || '#1890FF',
 	backgroundColor: process.env.APP_CONFIG_BG_COLOR || '#F0F2F5',
-	textColor: process.env.APP_CONFIG_TEXT_COLOR || '#F0F2F5',
+	textColor: process.env.APP_CONFIG_TEXT_COLOR || '#262626',
 	sidebarBackgroundColor: process.env.APP_CONFIG_SIDEBAR_BG || '#001529',
 
 	borderRadiusBase: '6px',
