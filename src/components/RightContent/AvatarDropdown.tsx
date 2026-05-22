@@ -1,8 +1,15 @@
 import { landingUrl } from '@/services/base/constant';
 import authService from '@/services/auth/authService';
 import defaultSettings from '../../../config/defaultSettings';
-import { FileWordOutlined, GlobalOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons';
-import { Avatar, Menu, Spin } from 'antd';
+import {
+	FileWordOutlined,
+	GlobalOutlined,
+	LogoutOutlined,
+	UserOutlined,
+	MailOutlined,
+	TeamOutlined,
+} from '@ant-design/icons';
+import { Avatar, Menu, Spin, Divider, Space, Typography } from 'antd';
 import { type ItemType } from 'antd/lib/menu/hooks/useItems';
 import React from 'react';
 import { OIDCBounder } from '../OIDCBounder';
@@ -12,6 +19,8 @@ import styles from './index.less';
 export type GlobalHeaderRightProps = {
 	menu?: boolean;
 };
+
+const { Text } = Typography;
 
 const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
 	const loginOut = () => OIDCBounder?.getActions()?.dangXuat();
@@ -32,64 +41,109 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
 	const fullName = currentUser.fullName || currentUser.username || 'User';
 	const lastNameChar = fullName.split(' ')?.at(-1)?.[0]?.toUpperCase() ?? '';
 
-	// Tạo menu items động dựa trên settings
-	const items: ItemType[] = [
-		{
-			key: 'name',
-			icon: <UserOutlined />,
-			label: fullName,
-		},
-	];
+	// Lấy thông tin chi tiết
+	const userEmail = currentUser.email || 'N/A';
+	const userRole = currentUser.roles?.[0] || 'User';
+	const roleDisplay = userRole === 'ADMIN' ? 'Quản trị viên' : userRole === 'DOCTOR' ? 'Bác sĩ' : 'Khách hàng';
 
-	// Thêm Office 365 link nếu được bật
-	if (defaultSettings.showOffice365Link) {
+	// Tạo profile card content
+	const profileCard = (
+		<div className={styles.profileCard}>
+			<div className={styles.profileHeader}>
+				<Avatar
+					size={64}
+					icon={lastNameChar ? lastNameChar : <UserOutlined />}
+					className={styles.profileAvatar}
+					style={{
+						backgroundColor: '#1890ff',
+						fontSize: '28px',
+						fontWeight: 'bold',
+					}}
+				/>
+				<div className={styles.profileInfo}>
+					<Text strong style={{ fontSize: '16px', display: 'block', marginBottom: '4px' }}>
+						{fullName}
+					</Text>
+					<Text type='secondary' style={{ fontSize: '12px', display: 'block' }}>
+						{roleDisplay}
+					</Text>
+				</div>
+			</div>
+
+			<Divider style={{ margin: '12px 0' }} />
+
+			<Space direction='vertical' style={{ width: '100%' }}>
+				<div className={styles.profileDetail}>
+					<MailOutlined className={styles.detailIcon} />
+					<Text type='secondary' style={{ fontSize: '12px' }}>
+						{userEmail}
+					</Text>
+				</div>
+				<div className={styles.profileDetail}>
+					<TeamOutlined className={styles.detailIcon} />
+					<Text type='secondary' style={{ fontSize: '12px' }}>
+						{roleDisplay}
+					</Text>
+				</div>
+			</Space>
+
+			<Divider style={{ margin: '12px 0' }} />
+
+			<Menu className={styles.profileMenu} items={getMenuItems()} />
+		</div>
+	);
+
+	const getMenuItems = (): ItemType[] => {
+		const items: ItemType[] = [];
+
+		// Thêm Office 365 link nếu được bật
+		if (defaultSettings.showOffice365Link) {
+			items.push({
+				key: 'office',
+				icon: <FileWordOutlined />,
+				label: 'Office 365',
+				onClick: () => window.open('https://office.com/'),
+			});
+		}
+
+		// Thêm Cổng thông tin link nếu được bật
+		if (defaultSettings.showLandingPortalLink) {
+			items.push({
+				key: 'portal',
+				icon: <GlobalOutlined />,
+				label: APP_CONFIG_TITLE_LANDING ?? 'Cổng thông tin',
+				onClick: () => window.open(landingUrl),
+			});
+		}
+
+		// Thêm divider và logout
+		if (items.length > 0) {
+			items.push({ type: 'divider', key: 'divider' });
+		}
+
 		items.push({
-			key: 'office',
-			icon: <FileWordOutlined />,
-			label: 'Office 365',
-			onClick: () => window.open('https://office.com/'),
-		});
-	}
-
-	// Thêm Cổng thông tin link nếu được bật
-	if (defaultSettings.showLandingPortalLink) {
-		items.push({
-			key: 'portal',
-			icon: <GlobalOutlined />,
-			label: APP_CONFIG_TITLE_LANDING ?? 'Cổng thông tin',
-			onClick: () => window.open(landingUrl),
-		});
-	}
-
-	// Thêm divider và logout
-	items.push(
-		{ type: 'divider', key: 'divider' },
-		{
 			key: 'logout',
 			icon: <LogoutOutlined />,
 			label: 'Đăng xuất',
 			onClick: loginOut,
 			danger: true,
-		}
-	);
+		});
 
-	if (menu && !currentUser.roles?.includes('ADMIN')) {
-		// items.splice(1, 0, {
-		//   key: 'center',
-		//   icon: <UserOutlined />,
-		//   label: 'Trang cá nhân',
-		//   onClick: () => history.push('/account/center'),
-		// });
-	}
+		return items;
+	};
 
 	return (
 		<>
-			<HeaderDropdown overlay={<Menu className={styles.menu} items={items} />}>
+			<HeaderDropdown overlay={profileCard}>
 				<span className={`${styles.action} ${styles.account}`}>
 					<Avatar
 						className={styles.avatar}
 						icon={lastNameChar ? lastNameChar : <UserOutlined />}
 						alt='avatar'
+						style={{
+							backgroundColor: '#1890ff',
+							fontWeight: 'bold',
+						}}
 					/>
 					<span className={`${styles.name}`}>{fullName}</span>
 				</span>
