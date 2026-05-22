@@ -18,10 +18,8 @@ import {
 } from 'antd';
 import {
     DeleteOutlined,
-    MailOutlined,
     BellOutlined,
     CheckOutlined,
-    DeleteFilled,
     ReloadOutlined,
     SettingOutlined,
 } from '@ant-design/icons';
@@ -127,13 +125,7 @@ const NotificationCenter: React.FC = () => {
         return colorMap[priority] || 'default';
     };
 
-    const handleViewDetail = (notification: Notification) => {
-        setSelectedNotification(notification);
-        setDrawerVisible(true);
-        if (!notification.isRead) {
-            handleMarkAsRead(notification);
-        }
-    };
+
 
     return (
         <div className={styles.container}>
@@ -266,7 +258,7 @@ const NotificationCenter: React.FC = () => {
                     setDrawerVisible(false);
                     setSelectedNotification(null);
                 }}
-                open={drawerVisible}
+                visible={drawerVisible}
                 width={500}
             >
                 {selectedNotification && (
@@ -305,7 +297,7 @@ const NotificationCenter: React.FC = () => {
                 title="Cài đặt thông báo"
                 placement="right"
                 onClose={() => setPreferenceDrawerVisible(false)}
-                open={preferenceDrawerVisible}
+                visible={preferenceDrawerVisible}
             >
                 <p>Tính năng này sẽ được cập nhật</p>
             </Drawer>

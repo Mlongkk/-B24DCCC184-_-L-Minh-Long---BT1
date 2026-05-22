@@ -1,5 +1,6 @@
 import React from 'react';
 import { useModel } from 'umi';
+import defaultSettings from '../../../config/defaultSettings';
 import AvatarDropdown from './AvatarDropdown';
 import styles from './index.less';
 
@@ -24,7 +25,7 @@ const GlobalHeaderRight: React.FC = () => {
 				</a>
 			</Tooltip> */}
 
-			<AvatarDropdown menu />
+			{defaultSettings.showUserDropdown && <AvatarDropdown menu />}
 		</div>
 	);
 };

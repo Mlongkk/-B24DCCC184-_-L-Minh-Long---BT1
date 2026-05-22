@@ -20,7 +20,6 @@ import {
     TeamOutlined,
     CalendarOutlined,
     CheckCircleOutlined,
-    CopyOutlined,
 } from '@ant-design/icons';
 import dashboardService, { DashboardStats } from '@/services/dashboard/dashboardService';
 import authService from '@/services/auth/authService';

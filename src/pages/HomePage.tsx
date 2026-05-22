@@ -1,7 +1,7 @@
 import React from 'react';
 import authService from '@/services/auth/authService';
-import Dashboard from './Dashboard/Dashboard';
 import CustomerDashboard from './CustomerDashboard/CustomerDashboard';
+import Trangchu from './TrangChu';
 
 /**
  * Trang chủ chính - hiển thị dashboard khác nhau dựa trên role
@@ -13,7 +13,7 @@ const HomePage: React.FC = () => {
 
     // Nếu user là ADMIN hoặc VET (DOCTOR) → Dashboard
     if (user && (user.roles.includes('ADMIN') || user.roles.includes('VET'))) {
-        return <Dashboard />;
+        return <Trangchu />;
     }
 
     // Default: CustomerDashboard

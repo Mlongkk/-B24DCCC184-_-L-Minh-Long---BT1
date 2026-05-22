@@ -1,4 +1,5 @@
 import { landingUrl } from '@/services/base/constant';
+import defaultSettings from '../../../config/defaultSettings';
 import { FileWordOutlined, GlobalOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Menu, Spin } from 'antd';
 import { type ItemType } from 'antd/lib/menu/hooks/useItems';
@@ -29,33 +30,37 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
 		: initialState.currentUser?.name ?? (initialState.currentUser?.preferred_username || '');
 	const lastNameChar = fullName.split(' ')?.at(-1)?.[0]?.toUpperCase();
 
+	// Tạo menu items động dựa trên settings
 	const items: ItemType[] = [
 		{
 			key: 'name',
 			icon: <UserOutlined />,
 			label: fullName,
 		},
-		// {
-		// 	key: 'password',
-		// 	icon: <SwapOutlined />,
-		// 	label: 'Đổi mật khẩu',
-		// 	onClick: () => {
-		// 		const redirect = window.location.href;
-		// 		window.location.href = `${keycloakAuthEndpoint}?client_id=${AppModules[currentRole].clientId}&redirect_uri=${redirect}&response_type=code&scope=openid&kc_action=UPDATE_PASSWORD`;
-		// 	},
-		// },
-		{
+	];
+
+	// Thêm Office 365 link nếu được bật
+	if (defaultSettings.showOffice365Link) {
+		items.push({
 			key: 'office',
 			icon: <FileWordOutlined />,
 			label: 'Office 365',
 			onClick: () => window.open('https://office.com/'),
-		},
-		{
+		});
+	}
+
+	// Thêm Cổng thông tin link nếu được bật
+	if (defaultSettings.showLandingPortalLink) {
+		items.push({
 			key: 'portal',
 			icon: <GlobalOutlined />,
 			label: APP_CONFIG_TITLE_LANDING ?? 'Cổng thông tin',
 			onClick: () => window.open(landingUrl),
-		},
+		});
+	}
+
+	// Thêm divider và logout
+	items.push(
 		{ type: 'divider', key: 'divider' },
 		{
 			key: 'logout',
@@ -63,8 +68,8 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
 			label: 'Đăng xuất',
 			onClick: loginOut,
 			danger: true,
-		},
-	];
+		}
+	);
 
 	if (menu && !initialState.currentUser.realm_access?.roles?.includes('QUAN_TRI_VIEN')) {
 		// items.splice(1, 0, {

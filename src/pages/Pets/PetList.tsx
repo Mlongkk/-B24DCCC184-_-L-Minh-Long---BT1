@@ -4,13 +4,11 @@ import {
     Table,
     Button,
     Space,
-    Modal,
     Form,
     Input,
     Select,
     message,
     Popconfirm,
-    Tag,
     Row,
     Col,
     Drawer,
@@ -23,7 +21,6 @@ import {
     EditOutlined,
     DeleteOutlined,
     EyeOutlined,
-    SearchOutlined,
     ReloadOutlined,
     CameraOutlined,
 } from '@ant-design/icons';
@@ -121,7 +118,7 @@ const PetList: React.FC = () => {
             setUploadLoading(true);
             const response = await petService.uploadPetAvatar(selectedPet.id, file);
             message.success('Tải ảnh thành công');
-            form.setFieldValue('avatar', response.avatarUrl);
+            form.setFieldsValue({ avatar: response.avatarUrl });
         } catch (error) {
             message.error('Lỗi khi tải ảnh');
         } finally {
@@ -245,7 +242,6 @@ const PetList: React.FC = () => {
                             placeholder="Tìm kiếm tên..."
                             value={searchText}
                             onChange={(e) => setSearchText(e.target.value)}
-                            icon={<SearchOutlined />}
                         />
                     </Col>
                 </Row>
@@ -273,7 +269,7 @@ const PetList: React.FC = () => {
                     setSelectedPet(null);
                     form.resetFields();
                 }}
-                open={drawerVisible}
+                visible={drawerVisible}
                 width={400}
             >
                 <Form
@@ -354,9 +350,9 @@ const PetList: React.FC = () => {
                                     handleUploadAvatar(file);
                                     return false;
                                 }}
-                                loading={uploadLoading}
+                                disabled={uploadLoading}
                             >
-                                <Button icon={<CameraOutlined />}>Tải ảnh lên</Button>
+                                <Button icon={<CameraOutlined />} loading={uploadLoading}>Tải ảnh lên</Button>
                             </Upload>
                         </Form.Item>
                     )}

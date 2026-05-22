@@ -10,8 +10,13 @@ const Settings: LayoutSettings & {
 	backgroundColor?: string;
 	textColor?: string;
 	sidebarBackgroundColor?: string;
+
+	// Header user dropdown config
+	showUserDropdown?: boolean;
+	showOffice365Link?: boolean;
+	showLandingPortalLink?: boolean;
 } = {
-	
+
 	// Sử dụng biến toàn cục bạn đã declare trong typings.d.ts
 	primaryColor: process.env.APP_CONFIG_PRIMARY_COLOR || '#CC0D00',
 	secondaryColor: process.env.APP_CONFIG_SECONDARY_COLOR || '#1890FF',
@@ -29,10 +34,15 @@ const Settings: LayoutSettings & {
 	pwa: false,
 	logo: '/logo.png',
 	iconfontUrl: '',
-	headerTheme: 'dark', // Đổi sang dark
-    navTheme: 'realDark', 
-    headerHeight: 56, // Giảm nhẹ chiều cao Header để tăng không gian nội dung
+	headerTheme: 'dark',
+	navTheme: 'realDark',
+	headerHeight: 56,
 	siderWidth: 220,
+
+	// Header user dropdown config
+	showUserDropdown: true,			// Hiển thị dropdown tên user
+	showOffice365Link: false,		// Hiển thị link Office 365
+	showLandingPortalLink: true,	// Hiển thị link Cổng thông tin
 };
 
 export default Settings;
