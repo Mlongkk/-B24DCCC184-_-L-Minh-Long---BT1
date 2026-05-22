@@ -51,11 +51,18 @@ const UserList: React.FC = () => {
                 page: pagination.current,
                 pageSize: pagination.pageSize,
             });
-            setUsers(response.data);
+            // Ensure data is always an array with roles field
+            const usersData = Array.isArray(response.data) ? response.data : response.data?.data || [];
+            const processedUsers = usersData.map((user: any) => ({
+                ...user,
+                roles: user.roles || [],
+            }));
+            setUsers(processedUsers);
             setPagination((prev) => ({ ...prev, total: response.total }));
         } catch (error) {
             console.error('Lỗi khi tải danh sách người dùng', error);
             message.error('Lỗi khi tải danh sách người dùng');
+            setUsers([]);
         } finally {
             setLoading(false);
         }
@@ -71,7 +78,7 @@ const UserList: React.FC = () => {
             email: user.email,
             fullName: user.fullName,
             phone: user.phone,
-            roles: user.roles,
+            roles: user.roles || [],
         });
         setDrawerVisible(true);
     };
@@ -174,13 +181,17 @@ const UserList: React.FC = () => {
             dataIndex: 'roles',
             key: 'roles',
             width: 200,
-            render: (roles: UserRole[]) => (
+            render: (roles: UserRole[] | undefined) => (
                 <Space wrap>
-                    {roles.map((role) => (
-                        <Tag key={role} color={getRoleColor(role)}>
-                            {getRoleDisplay(role)}
-                        </Tag>
-                    ))}
+                    {roles && roles.length > 0 ? (
+                        roles.map((role) => (
+                            <Tag key={role} color={getRoleColor(role)}>
+                                {getRoleDisplay(role)}
+                            </Tag>
+                        ))
+                    ) : (
+                        <span style={{ color: '#999' }}>-</span>
+                    )}
                 </Space>
             ),
         },
