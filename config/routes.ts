@@ -102,6 +102,13 @@ export default [
 	},
 
 	{
+		path: '/users',
+		name: 'Quản lý người dùng',
+		component: './Users/UserList',
+		icon: 'TeamOutlined',
+	},
+
+	{
 		path: '/notifications',
 		name: 'Thông báo',
 		component: './NotificationCenter/NotificationCenter',

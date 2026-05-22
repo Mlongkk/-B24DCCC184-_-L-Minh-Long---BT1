@@ -1,0 +1,191 @@
+@import '~antd/es/style/themes/default.less';
+
+@primary-blue: #1890ff;
+@text-secondary: #8c8c8c;
+@border-light: #f0f0f0;
+
+.container {
+    min-height: 100vh;
+    padding: 24px;
+    background: #f5f7fa;
+}
+
+.card {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    overflow: hidden;
+
+    :global {
+        .ant-card-body {
+            padding: 24px;
+        }
+    }
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+
+    .title {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 600;
+        color: #262626;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        :global(.anticon) {
+            color: @primary-blue;
+            font-size: 28px;
+        }
+    }
+}
+
+.filterSection {
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid @border-light;
+}
+
+.table {
+    :global {
+        .ant-table {
+            background: transparent;
+        }
+
+        .ant-table-thead>tr>th {
+            background: #fafafa;
+            border-bottom: 2px solid @border-light;
+            font-weight: 600;
+            color: #262626;
+        }
+
+        .ant-table-row {
+            transition: background-color 0.2s ease;
+
+            &:hover {
+                background-color: #f9f9f9 !important;
+            }
+        }
+
+        .ant-table-cell {
+            padding: 16px;
+            vertical-align: middle;
+        }
+    }
+}
+
+.userCell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .userInfo {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        .username {
+            font-weight: 600;
+            color: #262626;
+            font-size: 14px;
+        }
+
+        .fullname {
+            color: @text-secondary;
+            font-size: 12px;
+        }
+    }
+}
+
+.userProfile {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    margin-bottom: 16px;
+
+    .profileInfo {
+        flex: 1;
+
+        h3 {
+            margin: 0 0 4px 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #262626;
+        }
+
+        p {
+            margin: 0 0 8px 0;
+            font-size: 13px;
+            color: @text-secondary;
+        }
+    }
+}
+
+.drawerFooter {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    padding-top: 16px;
+    border-top: 1px solid @border-light;
+    margin-top: 24px;
+
+    :global {
+        .ant-btn {
+            min-width: 80px;
+        }
+    }
+}
+
+// Responsive
+@media only screen and (max-width: @screen-md) {
+    .container {
+        padding: 12px;
+    }
+
+    .header {
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+
+        .title {
+            font-size: 20px;
+        }
+
+        :global {
+            .ant-btn {
+                width: 100%;
+            }
+        }
+    }
+
+    .table {
+        :global {
+            .ant-table {
+                font-size: 12px;
+            }
+
+            .ant-table-cell {
+                padding: 12px 8px;
+            }
+        }
+    }
+
+    .userCell {
+        .userInfo {
+            .username {
+                font-size: 12px;
+            }
+
+            .fullname {
+                font-size: 11px;
+            }
+        }
+    }
+}
