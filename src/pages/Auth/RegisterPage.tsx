@@ -9,6 +9,7 @@ interface RegisterFormData {
     username: string;
     email: string;
     fullName: string;
+    phone: string;
     password: string;
     confirmPassword: string;
 }
@@ -31,15 +32,22 @@ const RegisterPage: React.FC = () => {
     const onFinish = async (values: RegisterFormData) => {
         try {
             setLoading(true);
-            console.log('Register attempt:', values);
+            console.log('=== REGISTER FORM DEBUG ===');
+            console.log('Form values:', values);
+            console.log('Form values (JSON):', JSON.stringify(values, null, 2));
 
             // Call register API
-            const result = await authService.register({
+            const payload = {
                 username: values.username,
                 email: values.email,
                 fullName: values.fullName,
+                phone: values.phone,
                 password: values.password,
-            });
+            };
+
+            console.log('Sending payload to API:', JSON.stringify(payload, null, 2));
+
+            const result = await authService.register(payload);
 
             console.log('Register success:', result);
             message.success('Đăng kí thành công! Vui lòng đăng nhập.');
@@ -138,6 +146,23 @@ const RegisterPage: React.FC = () => {
                             </Form.Item>
 
                             <Form.Item
+                                name="phone"
+                                label="Số điện thoại"
+                                rules={[
+                                    { required: true, message: 'Vui lòng nhập số điện thoại' },
+                                    {
+                                        pattern: /^[0-9]{9,11}$/,
+                                        message: 'Số điện thoại phải từ 9-11 chữ số',
+                                    },
+                                ]}
+                            >
+                                <Input
+                                    placeholder="Nhập số điện thoại"
+                                    disabled={loading}
+                                />
+                            </Form.Item>
+
+                            <Form.Item
                                 name="password"
                                 label="Mật khẩu"
                                 rules={[
@@ -217,8 +242,8 @@ const RegisterPage: React.FC = () => {
                         </div>
                     </Card>
                 </Col>
-            </Row>
-        </div>
+            </Row >
+        </div >
     );
 };
 

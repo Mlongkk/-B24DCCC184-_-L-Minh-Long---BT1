@@ -8,6 +8,7 @@ interface RegisterRequest {
     username: string;
     email: string;
     fullName: string;
+    phone: string;
     password: string;
 }
 
@@ -73,27 +74,38 @@ class AuthService {
 
     /**
      * Register new user
+     * Convert frontend camelCase to backend snake_case
      */
     async register(data: RegisterRequest): Promise<any> {
         try {
+            // Convert to backend format (snake_case)
+            const backendPayload = {
+                username: data.username,
+                email: data.email,
+                password: data.password,
+                full_name: data.fullName,  // Convert camelCase to snake_case
+                phone: data.phone,
+            };
+
             console.log('=== REGISTER API DEBUG ===');
             console.log('API_BASE:', API_BASE);
             console.log('Full URL:', `${API_BASE}/auth/register`);
-            console.log('Process.env.REACT_APP_API_URL:', process.env.REACT_APP_API_URL);
-            console.log('Register payload:', data);
+            console.log('Frontend Payload:', JSON.stringify(data, null, 2));
+            console.log('Backend Payload (converted):', JSON.stringify(backendPayload, null, 2));
 
-            const response = await this.http.post('/auth/register', data);
+            const response = await this.http.post('/auth/register', backendPayload);
             console.log('✅ Register success:', response.data);
             return response.data;
         } catch (error: any) {
             console.error('❌ Register API error:');
             console.error('Status:', error?.response?.status);
             console.error('Status Text:', error?.response?.statusText);
-            console.error('Error Data:', error?.response?.data);
+            console.error('Error Data (raw):', error?.response?.data);
+            console.error('Error Data (JSON):', JSON.stringify(error?.response?.data, null, 2));
             console.error('Error Message:', error?.message);
             console.error('Request URL:', error?.config?.url);
             console.error('Request Method:', error?.config?.method);
-            console.error('Full Error:', error);
+            console.error('Request Body:', error?.config?.data);
             throw error;
         }
     }

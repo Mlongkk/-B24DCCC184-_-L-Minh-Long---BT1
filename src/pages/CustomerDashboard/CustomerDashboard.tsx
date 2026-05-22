@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Row, Col, Card, Statistic, Button, Table, Space, Tag, Empty, Spin } from 'antd';
 import {
-    CatOutlined,
+    HeartOutlined,
     CalendarOutlined,
     FileTextOutlined,
     PlusOutlined,
@@ -147,7 +147,7 @@ const CustomerDashboard: React.FC = () => {
                             <Statistic
                                 title="Tổng số thú cưng"
                                 value={stats.totalPets}
-                                prefix={<CatOutlined />}
+                                prefix={<HeartOutlined />}
                             />
                             <Button
                                 type="primary"
