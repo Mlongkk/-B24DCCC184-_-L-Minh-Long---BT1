@@ -1,0 +1,108 @@
+.login-page-container {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px 0;
+
+    :global(.ant-row) {
+        width: 100%;
+    }
+
+    .login-page-card {
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        padding: 40px;
+        border: none;
+        background: white;
+
+        :global(.ant-card-body) {
+            padding: 0;
+        }
+
+        .login-page-header {
+            text-align: center;
+            margin-bottom: 30px;
+
+            h1 {
+                font-size: 32px;
+                font-weight: bold;
+                color: #667eea;
+                margin: 0 0 8px 0;
+            }
+
+            p {
+                color: #999;
+                margin: 0;
+                font-size: 14px;
+            }
+        }
+
+        :global(.ant-form) {
+            margin-bottom: 20px;
+
+            :global(.ant-form-item) {
+                margin-bottom: 16px;
+
+                &:last-child {
+                    margin-bottom: 0;
+                }
+            }
+
+            :global(.ant-input),
+            :global(.ant-input-password) {
+                height: 40px;
+                font-size: 14px;
+
+                :global(.ant-input-prefix) {
+                    margin-right: 8px;
+                }
+            }
+        }
+
+        :global(.ant-divider) {
+            margin: 20px 0;
+            color: #d9d9d9;
+        }
+
+        :global(.ant-btn) {
+            height: 40px;
+            font-size: 16px;
+            margin-bottom: 16px;
+
+            &:last-of-type {
+                margin-bottom: 0;
+            }
+        }
+
+        .login-page-footer {
+            text-align: center;
+            margin-top: 20px;
+
+            p {
+                margin: 8px 0;
+                color: #666;
+                font-size: 14px;
+
+                a {
+                    color: #667eea;
+                    text-decoration: none;
+
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .login-page-container {
+        .login-page-card {
+            padding: 24px;
+
+            .login-page-header h1 {
+                font-size: 24px;
+            }
+        }
+    }
+}

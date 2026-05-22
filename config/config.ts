@@ -6,13 +6,13 @@ import routes from './routes';
 // const { REACT_APP_ENV } = process.env;
 
 export default defineConfig({
-	history: { type: 'hash' }, // Thêm dòng này
-	
+	history: { type: 'hash' }, // Thêm dòng này để push web lên Netlify
+
 	// fix antd not working in production
 	extraBabelPlugins: [],
 	styleLoader: {},
 	//
-	
+
 	hash: true,
 	antd: {},
 	dva: {
@@ -65,7 +65,6 @@ export default defineConfig({
 	},
 	// mfsu: {},
 	webpack5: {},
-	exportStatic: {},
 	define: Object.entries(process.env).reduce((result, [key, value]) => {
 		if (key.startsWith('APP_CONFIG_')) {
 			return {

@@ -1,6 +1,10 @@
-import { type ThongBao } from '@/services/ThongBao/typing';
+// DEPRECATED: ThongBao typing no longer available
+// import { type ThongBao } from '@/services/ThongBao/typing';
 import { BellOutlined } from '@ant-design/icons';
 import { Badge, Spin, Tabs, Tooltip } from 'antd';
+import { Notification } from '@/models';
+
+// TODO: Update ThongBao types to use new Notification model
 import useMergedState from 'rc-util/es/hooks/useMergedState';
 import React from 'react';
 import HeaderDropdown from '../HeaderDropdown';

@@ -91,11 +91,12 @@
 
 .home-card-container {
 	background: linear-gradient(135deg,
-	rgba(149, 171, 27, 0.65) 3%,
-	rgba(237, 245, 192, 0.19) 100%,
+			rgba(149, 171, 27, 0.65) 3%,
+			rgba(237, 245, 192, 0.19) 100%,
 			rgba(255, 255, 255, 0.4) 20%,
 			rgba(237, 245, 192, 0.19) 100%) !important;
-	// ĐÂY LÀ CHÌA KHÓA: Tạo hiệu ứng mờ cho phần nền phía sau Card
+			
+	// Tạo hiệu ứng mờ cho phần nền phía sau Card
 	backdrop-filter: blur(20px);
 	-webkit-backdrop-filter: blur(20px);
 
@@ -178,77 +179,6 @@
 	}
 }
 
-// .home-card-container {
-// 	background: linear-gradient(135deg, rgba(255, 255, 255, 0.699) 0%, rgba(240, 242, 245, 0.7) 100%);
-// 	backdrop-filter: blur(10px); // Hiệu ứng kính mờ
-// 	border-radius: 24px !important; // Bo góc sâu
-// 	border: 1px solid rgba(255, 255, 255, 0.3);
-// 	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08); // Đổ bóng mềm
-// 	margin-top: 40px; margin-left: 40px; margin-right: 40px;
-// 	transition: all 0.3s ease;
-
-// 	&:hover {
-// 		transform: translateY(-5px); // Hiệu ứng bay bổng khi di chuột
-// 		box-shadow: 0 30px 60px rgba(0, 0, 0, 0.12);
-// 	}
-
-// 	.home-welcome {
-// 		display: flex;
-// 		flex-direction: column;
-// 		align-items: center;
-// 		justify-content: center;
-// 		padding: 60px 20px;
-
-// 		.logo {
-// 			width: 120px;
-// 			height: 120px;
-// 			// position: absolute;
-// 			// top:30px;
-// 		}
-
-// 		.text {
-// 			font-size: 24px;
-// 			// position: absolute;
-// 			// top: 150px;
-// 		}
-
-// 		.title {
-// 			font-size: 48px;
-// 			font-weight: 200; // Chữ mảnh tinh tế
-// 			color: #1a1a1a;
-// 			letter-spacing: 6px; // Độ giãn chữ rộng
-// 			text-transform: uppercase;
-// 			margin-bottom: 24px;
-// 			font-family: 'Segoe UI', Roboto, sans-serif;
-
-// 			@media (max-width: 768px) {
-// 				font-size: 24px;
-// 				letter-spacing: 2px;
-// 			}
-// 		}
-
-// 		.sub-title {
-// 			font-size: 32px;
-// 			font-weight: 800;
-// 			color: var(--primary-color); // Màu đỏ từ .env
-// 			letter-spacing: 1px;
-// 			margin: 0;
-// 			position: relative;
-
-// 			// Đường line trang trí dưới tên bệnh viện
-// 			&::after {
-// 				content: '';
-// 				display: block;
-// 				width: 80px;
-// 				height: 4px;
-// 				background: var(--primary-color);
-// 				margin: 15px auto 0;
-// 				border-radius: 10px;
-// 				opacity: 0.8;
-// 			}
-// 		}
-// 	}
-// }
 
 // Thêm hiệu ứng cho phần Header trông liền mạch hơn
 .ant-layout-header {

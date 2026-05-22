@@ -1,9 +1,14 @@
-import ViewThongBao from '@/pages/ThongBao/components/ViewThongBao';
+// DEPRECATED: ThongBao pages no longer available
+// import ViewThongBao from '@/pages/ThongBao/components/ViewThongBao';
 import { Modal } from 'antd';
 import { useEffect, useState } from 'react';
 import { useModel } from 'umi';
 import NoticeIcon from './NoticeIcon';
 
+// TODO: Replace with new NotificationCenter page
+
+// DEPRECATED: ThongBao model no longer available
+/*
 const NoticeIconView = () => {
 	const {
 		danhSach,
@@ -18,17 +23,13 @@ const NoticeIconView = () => {
 		unread,
 		readNotificationModel,
 	} = useModel('thongbao.noticeicon');
-	const [visibleDetail, setVisibleDetail] = useState<boolean>(false);
-	const [visiblePopup, setVisiblePopup] = useState<boolean>(false);
+*/
 
-	useEffect(() => {
-		getThongBaoModel();
-	}, [page, limit]);
-
-	const clearReadState = async () => {
-		readNotificationModel('ALL');
-		setVisiblePopup(false);
-	};
+// TODO: Integrate with new NotificationCenter page
+const NoticeIconView = () => {
+	// Placeholder: Show unread notifications count
+	const [unread, setUnread] = useState(0);
+	const [visiblePopup, setVisiblePopup] = useState(false);
 
 	return (
 		<>

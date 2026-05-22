@@ -1,4 +1,6 @@
-import { type ThongBao } from '@/services/ThongBao/typing';
+// DEPRECATED: ThongBao typing no longer available
+// import { type ThongBao } from '@/services/ThongBao/typing';
+import { Notification } from '@/models';
 import { Avatar, List, Skeleton } from 'antd';
 import classNames from 'classnames';
 import moment from 'moment';
@@ -34,7 +36,9 @@ const NoticeList: React.FC<NoticeIconTabProps> = ({
 	viewMoreText,
 	showViewMore = false,
 }) => {
-	const { total, readNotificationModel } = useModel('thongbao.noticeicon');
+	// DEPRECATED: Old thongbao model no longer available
+	// const { total, readNotificationModel } = useModel('thongbao.noticeicon');
+	const total = list.length;
 
 	if (!list || list.length === 0) {
 		return (
