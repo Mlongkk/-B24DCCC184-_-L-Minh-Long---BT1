@@ -2,7 +2,9 @@
   "compilerOptions": {
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "baseUrl": ".",
+    "paths": {
+      "*": ["./*"]
+    },
     "paths": {
       "@/*": ["./src/*"]
     }

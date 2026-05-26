@@ -3,7 +3,7 @@ import authService from '@/services/auth/authService';
 
 const API_BASE = window.location.hostname === 'localhost'
     ? 'http://localhost:4000/api'
-    : 'https://ript1307-nhom-4-kthp-backend.onrender.com/api';
+    : 'https://ript1307-nhom-4-kthp-backend-production.up.railway.app/api';
 
 export interface DashboardStats {
     totalCustomers: number;
@@ -151,23 +151,23 @@ class DashboardService {
     /**
      * Get customer growth data
      */
-    async getCustomerGrowth(months: number = 12): Promise<any[]> {
-        try {
-            // Lưu ý: Backend chưa có endpoint này, sử dụng mock data tạm thời
-            console.warn('Customer growth endpoint not yet implemented, using mock data');
-            return [
-                { month: 'Jan', count: 10 },
-                { month: 'Feb', count: 12 },
-                { month: 'Mar', count: 18 },
-                { month: 'Apr', count: 24 },
-                { month: 'May', count: 24 },
-            ];
-            return response.data;
-        } catch (error) {
-            console.error('Failed to fetch customer growth data', error);
-            throw error;
-        }
-    }
+    // async getCustomerGrowth(months: number = 12): Promise<any[]> {
+    //     try {
+    //         // Lưu ý: Backend chưa có endpoint này, sử dụng mock data tạm thời
+    //         console.warn('Customer growth endpoint not yet implemented, using mock data');
+    //         return [
+    //             { month: 'Jan', count: 10 },
+    //             { month: 'Feb', count: 12 },
+    //             { month: 'Mar', count: 18 },
+    //             { month: 'Apr', count: 24 },
+    //             { month: 'May', count: 24 },
+    //         ];
+    //         return response.data;
+    //     } catch (error) {
+    //         console.error('Failed to fetch customer growth data', error);
+    //         throw error;
+    //     }
+    // }
 
     /**
      * Get revenue data

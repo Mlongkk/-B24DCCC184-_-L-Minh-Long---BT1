@@ -10,7 +10,7 @@ import authService from '@/services/auth/authService';
 
 const API_BASE = window.location.hostname === 'localhost'
     ? 'http://localhost:4000/api'
-    : 'https://ript1307-nhom-4-kthp-backend.onrender.com/api';
+    : 'https://ript1307-nhom-4-kthp-backend-production.up.railway.app/api';
 
 class UserService {
     private http: AxiosInstance;

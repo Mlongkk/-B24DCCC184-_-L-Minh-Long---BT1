@@ -16,7 +16,7 @@ Trước khi bắt đầu, đảm bảo bạn đã cài đặt:
 Toàn bộ frontend đã được cấu hình để **tự động detect** địa chỉ API:
 
 - **Khi localhost**: API base URL = `http://localhost:3000/api`
-- **Khi production**: API base URL = `https://ript1307-nhom-4-kthp-backend.onrender.com/api`
+- **Khi production**: API base URL = `https://ript1307-nhom-4-kthp-backend-production.up.railway.app/api`
 
 **Các file đã cập nhật:**
 ```
@@ -261,7 +261,7 @@ window.location.reload()
 
 ### Frontend (tự động detect)
 - **Localhost**: Dùng `http://localhost:4000/api`
-- **Production** (https://quan-ly-benh-vien-thu-y-abc.netlify.app): Dùng `https://ript1307-nhom-4-kthp-backend.onrender.com/api`
+- **Production** (https://quan-ly-benh-vien-thu-y-abc.netlify.app): Dùng `https://ript1307-nhom-4-kthp-backend-production.up.railway.app/api`
 
 ### Backend (cần cấu hình)
 ```env

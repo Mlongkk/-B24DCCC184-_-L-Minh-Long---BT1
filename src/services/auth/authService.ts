@@ -4,10 +4,10 @@ import { keycloakAuthority } from '@/utils/ip';
 
 // Tự động detect API base URL dựa trên hostname
 // Local development: http://localhost:4000/api
-// Production: https://ript1307-nhom-4-kthp-backend.onrender.com/api
+// Production: https://ript1307-nhom-4-kthp-backend-production.up.railway.app/api
 const API_BASE = window.location.hostname === 'localhost'
     ? 'http://localhost:4000/api'
-    : 'https://ript1307-nhom-4-kthp-backend.onrender.com/api';
+    : 'https://ript1307-nhom-4-kthp-backend-production.up.railway.app/api';
 
 interface RegisterRequest {
     username: string;
