@@ -105,7 +105,7 @@ const RegisterPage: React.FC = () => {
                                         label="Họ và tên"
                                         rules={[
                                             { required: true, message: 'Vui lòng nhập họ và tên' },
-                                            { min: 2, message: 'Họ và tên phải từ 2 ký tự' }
+                                            { min: 3, message: 'Họ và tên phải từ 3 ký tự' }
                                         ]}
                                     >
                                         <Input prefix={<IdcardOutlined />} placeholder="Nhập họ và tên" disabled={loading} />

@@ -214,7 +214,7 @@ const UserList: React.FC = () => {
         {
             title: 'Tên người dùng',
             key: 'username',
-            
+
             render: (_: any, record: UserProfile) => (
                 <div className={styles.userCell}>
                     <Avatar
@@ -434,7 +434,9 @@ const UserList: React.FC = () => {
                             <Form.Item
                                 label='Tên đăng nhập'
                                 name='username'
-                                rules={[{ required: true, message: 'Vui lòng nhập tên đăng nhập' }]}
+                                rules={[{ required: true, message: 'Vui lòng nhập tên đăng nhập' },
+                                { pattern: /^[a-zA-Z0-9_.-]+$/, message: 'Tên đăng nhập chỉ chứa chữ, số, dấu gạch dưới, dấu chấm, dấu gạch ngang' }
+                                ]}
                             >
                                 <Input />
                             </Form.Item>
@@ -442,7 +444,9 @@ const UserList: React.FC = () => {
                             <Form.Item
                                 label='Họ tên'
                                 name='fullName'
-                                rules={[{ required: true, message: 'Vui lòng nhập họ tên' }]}
+                                rules={[{ required: true, message: 'Vui lòng nhập họ tên' },
+                                { min: 3, message: 'Họ và tên phải từ 3 ký tự' }
+                                ]}
                             >
                                 <Input />
                             </Form.Item>
@@ -519,7 +523,7 @@ const UserList: React.FC = () => {
                         name='username'
                         rules={[
                             { required: true, message: 'Vui lòng nhập tên đăng nhập' },
-                            { min: 3, message: 'Tên đăng nhập ít nhất 3 ký tự' }
+                            { pattern: /^[a-zA-Z0-9_.-]+$/, message: 'Tên đăng nhập chỉ chứa chữ, số, dấu gạch dưới, dấu chấm, dấu gạch ngang' }
                         ]}
                     >
                         <Input placeholder='VD: john_doe' />
@@ -540,8 +544,7 @@ const UserList: React.FC = () => {
                         label='Mật khẩu'
                         name='password'
                         rules={[
-                            { required: true, message: 'Vui lòng nhập mật khẩu' },
-                            { min: 6, message: 'Mật khẩu ít nhất 6 ký tự' }
+                            { required: true, message: 'Vui lòng nhập mật khẩu' }
                         ]}
                     >
                         <Input.Password placeholder='Nhập mật khẩu' />
@@ -550,7 +553,10 @@ const UserList: React.FC = () => {
                     <Form.Item
                         label='Họ tên'
                         name='fullName'
-                        rules={[{ required: true, message: 'Vui lòng nhập họ tên' }]}
+                        rules={[
+                            { required: true, message: 'Vui lòng nhập họ tên' },
+                            { min: 3, message: 'Họ và tên phải từ 3 ký tự' }
+                        ]}
                     >
                         <Input placeholder='VD: Nguyễn Văn A' />
                     </Form.Item>
