@@ -1,8 +1,13 @@
 import axios, { AxiosInstance } from 'axios';
 import { User, AuthResponse, LoginRequest, Permission_Codes } from '@/models/auth';
+import { keycloakAuthority } from '@/utils/ip';
 
-// Hardcode Render URL - không dùng env var vì UmiJS hash mode không inject env vars
-const API_BASE = 'https://ript1307-nhom-4-kthp-backend.onrender.com/api';
+// Tự động detect API base URL dựa trên hostname
+// Local development: http://localhost:4000/api
+// Production: https://ript1307-nhom-4-kthp-backend.onrender.com/api
+const API_BASE = window.location.hostname === 'localhost'
+    ? 'http://localhost:4000/api'
+    : 'https://ript1307-nhom-4-kthp-backend.onrender.com/api';
 
 interface RegisterRequest {
     username: string;
@@ -241,10 +246,22 @@ class AuthService {
     /**
      * Check if user has permission
      */
+    // hasPermission(permissionCode: Permission_Codes): boolean {
+    //     const user = this.getCurrentUser();
+    //     if (!user) return false;
+    //     return user.permissions.includes(permissionCode);
+    // }
+
     hasPermission(permissionCode: Permission_Codes): boolean {
         const user = this.getCurrentUser();
         if (!user) return false;
-        return user.permissions.includes(permissionCode);
+
+        // Nếu user có role là ADMIN hoặc DOCTOR thì bỏ qua kiểm tra, luôn trả về true
+        if (user.roles.includes('ADMIN') || user.roles.includes('DOCTOR')) {
+            return true;
+        }
+
+        return user.permissions?.includes(permissionCode);
     }
 
     /**
@@ -253,6 +270,12 @@ class AuthService {
     hasAnyPermission(permissionCodes: Permission_Codes[]): boolean {
         const user = this.getCurrentUser();
         if (!user) return false;
+
+        // Bypass cho ADMIN và DOCTOR
+        if (user.roles.includes('ADMIN') || user.roles.includes('DOCTOR')) {
+            return true;
+        }
+
         return permissionCodes.some(code => user.permissions.includes(code));
     }
 
@@ -285,9 +308,10 @@ class AuthService {
      * Check Keycloak login URL
      */
     getKeycloakLoginUrl(redirectUri: string): string {
+        const finalKeycloakAuthority = keycloakAuthority || 'https://sso.ript.vn/realms/ript';
         const clientId = process.env.REACT_APP_KEYCLOAK_CLIENT_ID || 'benhnvienabc-client';
-        const keycloakUrl = process.env.REACT_APP_KEYCLOAK_URL || 'http://localhost:8080';
-        const realm = process.env.REACT_APP_KEYCLOAK_REALM || 'benhnvienabc';
+        const realm = finalKeycloakAuthority.split('/realms/')?.pop() || 'benhnvienabc';
+        const keycloakUrl = finalKeycloakAuthority.split('/realms/')[0] || 'https://sso.ript.vn';
 
         const params = new URLSearchParams({
             client_id: clientId,
@@ -297,7 +321,7 @@ class AuthService {
             state: this.generateState(),
         });
 
-        return `${keycloakUrl}/auth/realms/${realm}/protocol/openid-connect/auth?${params.toString()}`;
+        return `${keycloakUrl}/realms/${realm}/protocol/openid-connect/auth?${params.toString()}`;
     }
 
     /**
@@ -316,6 +340,22 @@ class AuthService {
         const savedState = sessionStorage.getItem('oidc_state');
         sessionStorage.removeItem('oidc_state');
         return savedState === state;
+    }
+
+    /**
+     * Check if username already exists
+     */
+    async checkUsername(username: string): Promise<{ exists: boolean }> {
+        try {
+            const response = await this.http.get(`/auth/check-username?username=${encodeURIComponent(username)}`);
+            return response.data;
+        } catch (error: any) {
+            // If API doesn't support this endpoint, return false
+            if (error?.response?.status === 404) {
+                return { exists: false };
+            }
+            throw error;
+        }
     }
 }
 

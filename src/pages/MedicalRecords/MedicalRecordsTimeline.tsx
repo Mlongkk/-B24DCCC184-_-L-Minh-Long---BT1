@@ -117,30 +117,19 @@ const MedicalRecordsTimeline: React.FC = () => {
         return iconMap[type] || '📋';
     };
 
-    const getTimelineItems = () => {
-        if (!timeline || !timeline.records) return [];
-        return timeline.records.map((entry: any) => ({
-            children: (
-                <div>
-                    <p style={{ fontWeight: 'bold' }}>
-                        {getTypeIcon(entry.type)} {entry.title}
-                    </p>
-                    <p style={{ margin: '8px 0' }}>{entry.description}</p>
-                    {entry.veterinarian && (
-                        <p style={{ color: '#999', fontSize: 12 }}>
-                            👨‍⚕️ BS. {entry.veterinarian}
-                        </p>
-                    )}
-                </div>
-            ),
-            dot: (
-                <Badge
-                    status={entry.type === 'APPOINTMENT' ? 'processing' : 'success'}
-                />
-            ),
-            label: dayjs(entry.date).format('DD/MM/YYYY'),
-        }));
+    // Hàm lấy danh sách records từ timeline an toàn (hỗ trợ nhiều định dạng từ Backend)
+    const getTimelineList = (): any[] => {
+        if (!timeline) return [];
+        if (Array.isArray(timeline)) return timeline;
+        if (timeline.records && Array.isArray(timeline.records)) return timeline.records;
+        if (timeline.data) {
+            if (Array.isArray(timeline.data)) return timeline.data;
+            if (timeline.data.records && Array.isArray(timeline.data.records)) return timeline.data.records;
+        }
+        return [];
     };
+
+    const timelineList = getTimelineList();
 
     const recordColumns = [
         {
@@ -158,14 +147,14 @@ const MedicalRecordsTimeline: React.FC = () => {
             title: 'Chẩn đoán',
             dataIndex: 'diagnosis',
             key: 'diagnosis',
-            render: (text: string) => text?.substring(0, 30) + '...',
+            render: (text: string) => text ? (text.length > 30 ? `${text.substring(0, 30)}...` : text) : '---',
         },
         {
             title: 'Trạng thái',
             dataIndex: 'status',
             key: 'status',
             render: (status: string) => (
-                <Tag color={status === 'COMPLETED' ? 'green' : 'blue'}>{status}</Tag>
+                <Tag color={status === 'COMPLETED' ? 'green' : 'blue'}>{status || 'Chưa rõ'}</Tag>
             ),
         },
         {
@@ -228,8 +217,44 @@ const MedicalRecordsTimeline: React.FC = () => {
                     {selectedPetId && (
                         <>
                             <Card title="Timeline bệnh án" loading={loading}>
-                                {timeline && timeline.records && timeline.records.length > 0 ? (
-                                    <Timeline items={getTimelineItems()} />
+                                {timelineList && timelineList.length > 0 ? (
+                                    <Timeline>
+                                        {timelineList.map((entry: any, index: number) => {
+                                            // Xử lý map thuộc tính linh động giữa format Timeline mẫu và format Record gốc
+                                            const type = entry.type || 'DIAGNOSIS';
+                                            const title = entry.title || (entry.diagnosis ? `Chẩn đoán: ${entry.diagnosis}` : 'Lịch sử khám');
+                                            const desc = entry.description || entry.treatment || entry.notes || 'Không có chi tiết mô tả.';
+                                            const date = entry.date || entry.visitDate || entry.visit_date;
+                                            const formattedDate = date ? dayjs(date).format('DD/MM/YYYY') : '';
+                                            const vet = entry.veterinarian || entry.doctor_name || '';
+
+                                            return (
+                                                <Timeline.Item
+                                                    key={entry.id || index}
+                                                    dot={
+                                                        <Badge
+                                                            status={type === 'APPOINTMENT' ? 'processing' : 'success'}
+                                                        />
+                                                    }
+                                                >
+                                                    <div style={{ paddingLeft: '8px' }}>
+                                                        <span style={{ fontSize: '12px', color: '#999', display: 'block', marginBottom: '4px' }}>
+                                                            {formattedDate ? `📅 ${formattedDate}` : ''}
+                                                        </span>
+                                                        <p style={{ fontWeight: 'bold', margin: '0 0 4px', fontSize: '14px' }}>
+                                                            {getTypeIcon(type)} {title}
+                                                        </p>
+                                                        <p style={{ margin: '0 0 4px', color: '#555' }}>{desc}</p>
+                                                        {vet && (
+                                                            <p style={{ color: '#888', fontSize: 12, margin: 0 }}>
+                                                                👨‍⚕️ BS. {vet}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                </Timeline.Item>
+                                            );
+                                        })}
+                                    </Timeline>
                                 ) : (
                                     <Empty description="Chưa có bệnh án nào" />
                                 )}
@@ -265,7 +290,7 @@ const MedicalRecordsTimeline: React.FC = () => {
                     setDrawerVisible(false);
                     setSelectedRecord(null);
                 }}
-                open={drawerVisible}
+                visible={drawerVisible} // Đã đổi open -> visible cho AntD v4
                 width={600}
             >
                 {selectedRecord && (
@@ -295,7 +320,7 @@ const MedicalRecordsTimeline: React.FC = () => {
                                 <Row gutter={16}>
                                     {selectedRecord.vitals.temperature && (
                                         <Col xs={12} sm={6}>
-                                            <div>🌡️ Nhiệt độ: {selectedRecord.vitals.temperature}°C</div>
+                                            <div>Nhiệt độ: {selectedRecord.vitals.temperature}°C</div>
                                         </Col>
                                     )}
                                     {selectedRecord.vitals.heartRate && (

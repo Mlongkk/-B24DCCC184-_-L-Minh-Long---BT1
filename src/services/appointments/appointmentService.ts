@@ -9,7 +9,9 @@ import {
 } from '@/models/appointment';
 import authService from '@/services/auth/authService';
 
-const API_BASE = 'https://ript1307-nhom-4-kthp-backend.onrender.com/api';
+const API_BASE = window.location.hostname === 'localhost'
+    ? 'http://localhost:4000/api'
+    : 'https://ript1307-nhom-4-kthp-backend.onrender.com/api';
 
 class AppointmentService {
     private http: AxiosInstance;
@@ -59,14 +61,12 @@ class AppointmentService {
         }
     }
 
-    async updateAppointment(id: string, data: Partial<CreateAppointmentRequest>): Promise<Appointment> {
-        try {
-            const response = await this.http.put(`/${id}`, data);
-            return response.data;
-        } catch (error) {
-            console.error('Failed to update appointment', error);
-            throw error;
-        }
+    async updateAppointment(
+        id: string,
+        data: Partial<UpdateAppointmentRequest>
+    ): Promise<Appointment> {
+        const response = await this.http.put(`/${id}`, data);
+        return response.data;
     }
 
     async deleteAppointment(id: string): Promise<void> {
@@ -97,7 +97,10 @@ class AppointmentService {
     async getAvailableSlots(date: string, veterinarianId?: string): Promise<DaySchedule> {
         try {
             const response = await this.http.get('/availability/slots', {
-                params: { date, veterinarianId },
+                params: {
+                    date,
+                    doctor_id: veterinarianId
+                }
             });
             return response.data;
         } catch (error) {
@@ -138,10 +141,53 @@ class AppointmentService {
      */
     async confirmAppointment(id: string): Promise<Appointment> {
         try {
-            const response = await this.http.patch(`/${id}/confirm`);
+            const response = await this.http.patch(`/${id}/confirm`, { status: 'CONFIRMED' });
             return response.data;
         } catch (error) {
             console.error('Failed to confirm appointment', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Complete appointment (mark as completed)
+     */
+    async completeAppointment(id: string): Promise<Appointment> {
+        try {
+            const response = await this.http.patch(`/${id}/complete`, { status: 'COMPLETED' });
+            return response.data;
+        } catch (error) {
+            console.error('Failed to complete appointment', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Get doctor's appointment schedule
+     * Swagger: GET /api/doctor/{doctor_id}/schedule
+     */
+    async getDoctorSchedule(doctorId: string, filters?: any): Promise<any> {
+        try {
+            const response = await this.http.get(`/doctor/${doctorId}/schedule`, {
+                params: filters,
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Failed to fetch doctor schedule', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Get current user's appointments
+     * GET /api/appointments/my-appointments?status=CONFIRMED&priority_level=URGENT&page=1&limit=10
+     */
+    async getMyAppointments(filters?: any): Promise<AppointmentListResponse> {
+        try {
+            const response = await this.http.get('/my-appointments', { params: filters });
+            return response.data;
+        } catch (error) {
+            console.error('Failed to fetch my appointments', error);
             throw error;
         }
     }

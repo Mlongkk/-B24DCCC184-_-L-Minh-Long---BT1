@@ -12,16 +12,23 @@ import HomePage from './HomePage';
 const RootPage: React.FC = () => {
     const history = useHistory();
     const user = authService.getCurrentUser();
+    const token = authService.getToken();
+
+    console.log('🏠 RootPage rendered');
+    console.log('  Token:', token ? '✅ Present' : '❌ Missing');
+    console.log('  User:', user ? `✅ ${user.username}` : '❌ Missing');
 
     useEffect(() => {
-        if (!user) {
-            // Chưa login → redirect đến login page
+        // Nếu không có token và không có user → redirect đến login
+        if (!token && !user) {
+            console.log('❌ No token/user, redirecting to login');
             history.push('/auth/login');
         }
-    }, [history, user]);
+    }, [history, user, token]);
 
     // Chưa login → hiển thị loading
-    if (!user) {
+    if (!token || !user) {
+        console.log('⏳ Loading state - token or user missing');
         return (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
                 <Spin size="large" />
@@ -30,6 +37,7 @@ const RootPage: React.FC = () => {
     }
 
     // Đã login → render HomePage (dashboard khác nhau dựa trên role)
+    console.log('✅ Rendering HomePage for user:', user.username);
     return <HomePage />;
 };
 

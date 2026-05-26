@@ -8,7 +8,9 @@ import {
 } from '@/models/medical-record';
 import authService from '@/services/auth/authService';
 
-const API_BASE = 'https://ript1307-nhom-4-kthp-backend.onrender.com/api';
+const API_BASE = window.location.hostname === 'localhost'
+    ? 'http://localhost:4000/api'
+    : 'https://ript1307-nhom-4-kthp-backend.onrender.com/api';
 
 class MedicalRecordService {
     private http: AxiosInstance;
@@ -50,7 +52,14 @@ class MedicalRecordService {
 
     async createMedicalRecord(data: CreateMedicalRecordRequest): Promise<MedicalRecord> {
         try {
-            const response = await this.http.post('/', data);
+            const requestData = {
+                pet_id: data.petId,
+                visit_date: data.visitDate,
+                diagnosis: data.diagnosis,
+                treatment: data.treatment,
+                notes: data.notes,
+            };
+            const response = await this.http.post('/', requestData);
             return response.data;
         } catch (error) {
             console.error('Failed to create medical record', error);
@@ -63,7 +72,11 @@ class MedicalRecordService {
         data: Partial<CreateMedicalRecordRequest>,
     ): Promise<MedicalRecord> {
         try {
-            const response = await this.http.put(`/${id}`, data);
+            const requestData: any = {};
+            if (data.diagnosis) requestData.diagnosis = data.diagnosis;
+            if (data.treatment) requestData.treatment = data.treatment;
+            if (data.notes) requestData.notes = data.notes;
+            const response = await this.http.put(`/${id}`, requestData);
             return response.data;
         } catch (error) {
             console.error('Failed to update medical record', error);
@@ -81,11 +94,12 @@ class MedicalRecordService {
     }
 
     /**
-     * Get medical timeline for a pet
-     */
-    async getMedicalTimeline(petId: string): Promise<MedicalTimeline> {
+         * Get medical timeline for a pet
+         * Swagger: GET /api/medical-records/pet/{pet_id}/history
+         */
+    async getMedicalTimeline(petId: string): Promise<any> {
         try {
-            const response = await this.http.get(`/timeline/${petId}`);
+            const response = await this.http.get(`/pet/${petId}/history`);
             return response.data;
         } catch (error) {
             console.error('Failed to fetch medical timeline', error);
@@ -95,11 +109,19 @@ class MedicalRecordService {
 
     /**
      * Get records by pet ID
+     * Swagger: GET /api/medical-records?pet_id={pet_id}
      */
     async getRecordsByPetId(petId: string): Promise<MedicalRecord[]> {
         try {
-            const response = await this.http.get(`/pet/${petId}`);
-            return response.data;
+            const response = await this.http.get('/', { params: { pet_id: petId } });
+
+            // Đảm bảo bọc dữ liệu an toàn phòng trường hợp backend trả về phân trang { data: [...] } hoặc mảng trực tiếp
+            if (response.data && Array.isArray(response.data)) {
+                return response.data;
+            } else if (response.data && Array.isArray(response.data.data)) {
+                return response.data.data;
+            }
+            return [];
         } catch (error) {
             console.error('Failed to fetch pet medical records', error);
             throw error;

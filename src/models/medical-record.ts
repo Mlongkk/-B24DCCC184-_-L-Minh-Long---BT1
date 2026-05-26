@@ -8,8 +8,13 @@ export interface MedicalRecord {
     customerName?: string;
     appointmentId?: string;
     visitDate: string;
+    visit_date?: string;
     veterinarian: string;
     veterinarianId: string;
+    doctor?: {
+        id: string;
+        full_name: string;
+    };
     diagnosis: string;
     treatment: string;
     prescription?: Prescription[];
@@ -69,7 +74,7 @@ export interface MedicalTimelineEntry {
 export interface CreateMedicalRecordRequest {
     petId: string;
     visitDate: string;
-    veterinarianId: string;
+    veterinarianId?: string;
     diagnosis: string;
     treatment: string;
     vitals?: PetVitals;

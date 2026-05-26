@@ -1,5 +1,6 @@
 import { landingUrl } from '@/services/base/constant';
 import authService from '@/services/auth/authService';
+import userService from '@/services/users/userService';
 import defaultSettings from '../../../config/defaultSettings';
 import {
 	FileWordOutlined,
@@ -8,11 +9,11 @@ import {
 	UserOutlined,
 	MailOutlined,
 	TeamOutlined,
+	EditOutlined,
 } from '@ant-design/icons';
-import { Avatar, Menu, Spin, Divider, Space, Typography } from 'antd';
+import { Avatar, Menu, Spin, Divider, Space, Typography, Button, Drawer, Form, Input, message } from 'antd';
 import { type ItemType } from 'antd/lib/menu/hooks/useItems';
-import React from 'react';
-import { OIDCBounder } from '../OIDCBounder';
+import React, { useState } from 'react';
 import HeaderDropdown from './HeaderDropdown';
 import styles from './index.less';
 
@@ -22,35 +23,75 @@ export type GlobalHeaderRightProps = {
 
 const { Text } = Typography;
 
-const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
-	const loginOut = () => OIDCBounder?.getActions()?.dangXuat();
+const AvatarDropdown: React.FC<GlobalHeaderRightProps> = () => {
+	const [drawerVisible, setDrawerVisible] = useState(false);
+	const [form] = Form.useForm();
+	const [submitting, setSubmitting] = useState(false);
+	const initialUser = authService.getCurrentUser();
+	const [user, setUser] = useState(initialUser);
 
-	// Lấy user từ authService
-	const currentUser = authService.getCurrentUser();
+	const loginOut = () => {
+		authService.logout();
+		localStorage.clear();
+		sessionStorage.clear();
+		window.location.href = '/user/login';
+	};
 
-	// Nếu chưa đăng nhập, hiển thị loading
-	if (!currentUser) {
+	const handleSaveProfile = async (values: any) => {
+		if (!user) return;
+		try {
+			setSubmitting(true);
+			await userService.updateUser(user.id, {
+				fullName: values.fullName,
+				phone: values.phone,
+			});
+
+			const updatedUser = {
+				...user,
+				fullName: values.fullName,
+				phone: values.phone,
+			};
+			setUser(updatedUser);
+			localStorage.setItem('bva_user_info', JSON.stringify(updatedUser));
+
+			message.success('Cập nhật thông tin thành công');
+			setDrawerVisible(false);
+			form.resetFields();
+		} catch (error: any) {
+			console.error('Update error:', error);
+			message.error(error.response?.data?.message || 'Lỗi khi cập nhật thông tin');
+		} finally {
+			setSubmitting(false);
+		}
+	};
+
+	const handleOpenEditDrawer = () => {
+		if (user) {
+			form.setFieldsValue({
+				fullName: user.fullName || '',
+				phone: user.phone || '',
+			});
+			setDrawerVisible(true);
+		}
+	};
+
+	if (!user) {
 		return (
 			<span className={`${styles.action} ${styles.account}`}>
-				<Spin size='small' style={{ marginLeft: 8, marginRight: 8 }} />
+				<Spin size='small' />
 			</span>
 		);
 	}
 
-	// Tính fullName từ user data
-	const fullName = currentUser.fullName || currentUser.username || 'User';
+	const fullName = user.fullName || user.username || 'User';
 	const lastNameChar = fullName.split(' ')?.at(-1)?.[0]?.toUpperCase() ?? '';
-
-	// Lấy thông tin chi tiết
-	const userEmail = currentUser.email || 'N/A';
-	const userRole = currentUser.roles?.[0] || 'User';
+	const userEmail = user.email || 'N/A';
+	const userRole = user.roles?.[0] || 'User';
 	const roleDisplay = userRole === 'ADMIN' ? 'Quản trị viên' : userRole === 'DOCTOR' ? 'Bác sĩ' : 'Khách hàng';
 
-	// Định nghĩa getMenuItems trước khi sử dụng
 	const getMenuItems = (): ItemType[] => {
 		const items: ItemType[] = [];
 
-		// Thêm Office 365 link nếu được bật
 		if (defaultSettings.showOffice365Link) {
 			items.push({
 				key: 'office',
@@ -60,7 +101,6 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
 			});
 		}
 
-		// Thêm Cổng thông tin link nếu được bật
 		if (defaultSettings.showLandingPortalLink) {
 			items.push({
 				key: 'portal',
@@ -70,7 +110,6 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
 			});
 		}
 
-		// Thêm divider và logout
 		if (items.length > 0) {
 			items.push({ type: 'divider', key: 'divider' });
 		}
@@ -86,7 +125,6 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
 		return items;
 	};
 
-	// Tạo profile card content
 	const profileCard = (
 		<div className={styles.profileCard}>
 			<div className={styles.profileHeader}>
@@ -94,40 +132,38 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
 					size={64}
 					icon={lastNameChar ? lastNameChar : <UserOutlined />}
 					className={styles.profileAvatar}
-					style={{
-						backgroundColor: '#1890ff',
-						fontSize: '28px',
-						fontWeight: 'bold',
-					}}
 				/>
 				<div className={styles.profileInfo}>
-					<Text strong style={{ fontSize: '16px', display: 'block', marginBottom: '4px', color: '#1890ff' }}>
-						{fullName}
-					</Text>
-					<Text type='secondary' style={{ fontSize: '12px', display: 'block' }}>
-						{roleDisplay}
-					</Text>
+					<span className={styles.nameText}>{fullName}</span>
+					<span className={styles.roleText}>{roleDisplay}</span>
 				</div>
 			</div>
 
 			<Divider style={{ margin: '12px 0' }} />
 
-			<Space direction='vertical' style={{ width: '100%' }}>
+			{/* Thay Space bằng div container thường để tối ưu flexbox */}
+			<div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
 				<div className={styles.profileDetail}>
 					<MailOutlined className={styles.detailIcon} />
-					<Text type='secondary' style={{ fontSize: '12px' }}>
-						{userEmail}
-					</Text>
+					<span className={styles.detailText}>{userEmail}</span>
 				</div>
 				<div className={styles.profileDetail}>
 					<TeamOutlined className={styles.detailIcon} />
-					<Text type='secondary' style={{ fontSize: '12px' }}>
-						{roleDisplay}
-					</Text>
+					<span className={styles.detailText}>{roleDisplay}</span>
 				</div>
-			</Space>
+			</div>
 
 			<Divider style={{ margin: '12px 0' }} />
+
+			<Button
+				block
+				type='primary'
+				icon={<EditOutlined />}
+				onClick={handleOpenEditDrawer}
+				className={styles.editButton}
+			>
+				Sửa thông tin
+			</Button>
 
 			<Menu className={styles.profileMenu} items={getMenuItems()} />
 		</div>
@@ -141,15 +177,67 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
 						className={styles.avatar}
 						icon={lastNameChar ? lastNameChar : <UserOutlined />}
 						alt='avatar'
-						style={{
-							backgroundColor: '#1890ff',
-							fontWeight: 'bold',
-							color: '#fff',
-						}}
 					/>
-					<span className={`${styles.name}`} style={{color: "#F0F2F5"}}>{fullName}</span>
+					<span className={styles.name}>{fullName}</span>
 				</span>
 			</HeaderDropdown>
+
+			<Drawer
+				title='Chỉnh sửa thông tin cá nhân'
+				placement='right'
+				onClose={() => {
+					setDrawerVisible(false);
+					form.resetFields();
+				}}
+				visible={drawerVisible}
+				width={480}
+			>
+				<Form
+					form={form}
+					layout='vertical'
+					onFinish={handleSaveProfile}
+				>
+					<div className={styles.drawerHeaderBanner}>
+						<Avatar
+							size={80}
+							icon={lastNameChar ? lastNameChar : <UserOutlined />}
+							className={styles.drawerAvatar}
+						/>
+						<div>
+							<h3 className={styles.drawerTitle}>{fullName}</h3>
+							<p className={styles.drawerSubtitle}>{userEmail}</p>
+						</div>
+					</div>
+
+					<Form.Item
+						label='Họ tên'
+						name='fullName'
+						rules={[{ required: true, message: 'Vui lòng nhập họ tên' }]}
+					>
+						<Input placeholder="Nhập họ và tên đầy đủ" />
+					</Form.Item>
+
+					<Form.Item
+						label='Điện thoại'
+						name='phone'
+						rules={[
+							{
+								pattern: /^0\d{9,10}$/,
+								message: 'Số điện thoại phải bắt đầu bằng 0 và có từ 10 đến 11 chữ số',
+							},
+						]}
+					>
+						<Input placeholder="Nhập số điện thoại liên hệ" />
+					</Form.Item>
+
+					<div className={styles.drawerFooter}>
+						<Button onClick={() => setDrawerVisible(false)}>Hủy</Button>
+						<Button type='primary' htmlType='submit' loading={submitting}>
+							Lưu thay đổi
+						</Button>
+					</div>
+				</Form>
+			</Drawer>
 		</>
 	);
 };

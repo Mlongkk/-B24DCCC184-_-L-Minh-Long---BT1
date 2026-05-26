@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, Card, Divider, Row, Col, message } from 'antd';
-import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
+import { UserOutlined, LockOutlined, MailOutlined, PhoneOutlined, IdcardOutlined } from '@ant-design/icons';
 import { useHistory } from 'umi';
 import authService from '@/services/auth/authService';
 import './LoginPage.less';
@@ -19,24 +19,34 @@ const RegisterPage: React.FC = () => {
     const history = useHistory();
     const [loading, setLoading] = useState(false);
 
-    // Debug: Log API configuration on component mount
     useEffect(() => {
         console.log('=== RegisterPage Environment ===');
-        console.log('REACT_APP_API_URL:', process.env.REACT_APP_API_URL);
-        console.log('NODE_ENV:', process.env.NODE_ENV);
     }, []);
 
-    /**
-     * Handle user registration
-     */
+    const checkUsernameExists = async (username: string) => {
+        if (!username || username.length < 3) return false;
+
+        try {
+            const response = await authService.checkUsername(username);
+            // Trường hợp API trả về dạng 200 OK kèm object kết quả
+            return response?.exists || false;
+        } catch (error: any) {
+            console.error('Error checking username:', error);
+
+            // Nếu API trả về lỗi 400 hoặc 409 nghĩa là tài khoản ĐÃ TỒN TẠI
+            if (error?.response?.status === 400 || error?.response?.status === 409) {
+                return true; // Trả về true để xác nhận username ĐÃ tồn tại
+            }
+
+            return false; // Các lỗi mạng khác hoặc sập server
+        }
+    };
+
     const onFinish = async (values: RegisterFormData) => {
         try {
             setLoading(true);
-            console.log('=== REGISTER FORM DEBUG ===');
-            console.log('Form values:', values);
-            console.log('Form values (JSON):', JSON.stringify(values, null, 2));
 
-            // Call register API
+            // Tạo payload gửi đi
             const payload = {
                 username: values.username,
                 email: values.email,
@@ -45,205 +55,143 @@ const RegisterPage: React.FC = () => {
                 password: values.password,
             };
 
-            console.log('Sending payload to API:', JSON.stringify(payload, null, 2));
-
+            // Gửi thẳng yêu cầu đăng ký lên server
             const result = await authService.register(payload);
 
             console.log('Register success:', result);
-            message.success('Đăng kí thành công! Vui lòng đăng nhập.');
+            message.success('Đăng ký thành công! Vui lòng đăng nhập.');
             history.push('/auth/login');
         } catch (error: any) {
             console.error('Register error:', error);
-            console.error('Error response:', error?.response?.data);
-            console.error('Error status:', error?.response?.status);
 
+            // Đọc thông báo lỗi chi tiết trả về từ Backend của bạn
+            // Tùy theo cấu trúc API, thông thường lỗi trùng sẽ nằm trong error.response.data
             const errorMsg =
-                error?.response?.data?.message ||
+                error?.response?.data?.message ||  // Ví dụ: "Tên đăng nhập này đã tồn tại"
                 error?.response?.data?.detail ||
                 error?.response?.data?.error ||
                 error?.message ||
-                'Đăng kí thất bại. Vui lòng thử lại.';
+                'Đăng ký thất bại. Vui lòng thử lại.';
+
+            // Hiển thị thông báo lỗi thực tế từ server trả về thay vì câu thông báo chung chung
             message.error(errorMsg);
         } finally {
             setLoading(false);
         }
     };
-
-    const handleLoginClick = () => {
-        history.push('/auth/login');
-    };
-
     return (
         <div className="login-page-container">
-            <Row justify="center" align="middle" style={{ minHeight: '100vh' }}>
-                <Col xs={22} sm={20} md={10} lg={8} xl={6}>
-                    <Card className="login-page-card">
-                        {/* Header */}
+            <Row justify="start" align="middle" className="login-row">
+                {/* Tăng độ rộng md và lg lên để form 2 cột trên desktop đẹp hơn */}
+                <Col xs={24} sm={22} md={16} lg={12} xl={10} className="login-col">
+                    <Card className="login-page-card registration-card">
                         <div className="login-page-header">
                             <h1>BenhVienABC</h1>
-                            <p>Tạo tài khoản mới</p>
+                            <p>Tạo tài khoản mới để trải nghiệm dịch vụ</p>
                         </div>
 
-                        {/* Register Form */}
                         <Form
                             form={form}
                             layout="vertical"
                             onFinish={onFinish}
                             autoComplete="off"
                             size="large"
+                            requiredMark={false} // Ẩn dấu sao đỏ để UI tinh tế hơn
                         >
-                            <Form.Item
-                                name="fullName"
-                                label="Họ và tên"
-                                rules={[
-                                    { required: true, message: 'Vui lòng nhập họ và tên' },
-                                    { min: 2, message: 'Họ và tên phải từ 2 ký tự' },
-                                    { max: 100, message: 'Họ và tên không vượt quá 100 ký tự' },
-                                ]}
-                            >
-                                <Input
-                                    placeholder="Nhập họ và tên"
-                                    disabled={loading}
-                                />
-                            </Form.Item>
+                            <Row gutter={16}>
+                                <Col xs={24} sm={12}>
+                                    <Form.Item
+                                        name="fullName"
+                                        label="Họ và tên"
+                                        rules={[
+                                            { required: true, message: 'Vui lòng nhập họ và tên' },
+                                            { min: 2, message: 'Họ và tên phải từ 2 ký tự' }
+                                        ]}
+                                    >
+                                        <Input prefix={<IdcardOutlined />} placeholder="Nhập họ và tên" disabled={loading} />
+                                    </Form.Item>
+                                </Col>
+                                <Col xs={24} sm={12}>
+                                    <Form.Item
+                                        name="username"
+                                        label="Tên đăng nhập"
+                                        rules={[
+                                            { required: true, message: 'Vui lòng nhập tên đăng nhập' },
+                                            { pattern: /^[a-zA-Z0-9_.-]+$/, message: 'Tên đăng nhập chỉ chứa chữ, số, dấu gạch dưới, dấu chấm, dấu gạch ngang' }
+                                        ]}
+                                    >
+                                        <Input prefix={<UserOutlined />} placeholder="Tên đăng nhập" disabled={loading} />
+                                    </Form.Item>
+                                </Col>
+                                <Col xs={24} sm={12}>
+                                    <Form.Item
+                                        name="email"
+                                        label="Email"
+                                        rules={[{ required: true, type: 'email', message: 'Email không hợp lệ' }]}
+                                    >
+                                        <Input prefix={<MailOutlined />} placeholder="email@example.com" disabled={loading} />
+                                    </Form.Item>
+                                </Col>
+                                <Col xs={24} sm={12}>
+                                    <Form.Item
+                                        name="phone"
+                                        label="Số điện thoại"
+                                        rules={[
+                                            { required: true, message: 'Vui lòng nhập số điện thoại' },
+                                            { pattern: /^0[0-9]{9,10}$/, message: 'Số điện thoại phải bắt đầu bằng 0 và có 10-11 chữ số' }
+                                        ]}
+                                    >
+                                        <Input prefix={<PhoneOutlined />} placeholder="Nhập số điện thoại" disabled={loading} />
+                                    </Form.Item>
+                                </Col>
+                                <Col xs={24} sm={12}>
+                                    <Form.Item
+                                        name="password"
+                                        label="Mật khẩu"
+                                        rules={[{ required: true, message: 'Vui lòng nhập mật khẩu' }]}
+                                    >
+                                        <Input.Password prefix={<LockOutlined />} placeholder="Nhập mật khẩu" disabled={loading} />
+                                    </Form.Item>
+                                </Col>
+                                <Col xs={24} sm={12}>
+                                    <Form.Item
+                                        name="confirmPassword"
+                                        label="Xác nhận mật khẩu"
+                                        rules={[
+                                            { required: true, message: 'Vui lòng xác nhận mật khẩu' },
+                                            ({ getFieldValue }) => ({
+                                                validator(_, value) {
+                                                    if (!value || getFieldValue('password') === value) return Promise.resolve();
+                                                    return Promise.reject(new Error('Mật khẩu không khớp!'));
+                                                },
+                                            }),
+                                        ]}
+                                    >
+                                        <Input.Password prefix={<LockOutlined />} placeholder="Xác nhận mật khẩu" disabled={loading} />
+                                    </Form.Item>
+                                </Col>
+                            </Row>
 
-                            <Form.Item
-                                name="username"
-                                label="Tên đăng nhập"
-                                rules={[
-                                    { required: true, message: 'Vui lòng nhập tên đăng nhập' },
-                                    { min: 3, message: 'Tên đăng nhập phải từ 3 ký tự' },
-                                    { max: 50, message: 'Tên đăng nhập không vượt quá 50 ký tự' },
-                                    {
-                                        pattern: /^[a-zA-Z0-9_.-]+$/,
-                                        message: 'Tên đăng nhập chỉ chứa chữ, số, dấu gạch dưới, dấu chấm, dấu gạch ngang',
-                                    },
-                                ]}
-                            >
-                                <Input
-                                    prefix={<UserOutlined />}
-                                    placeholder="Tên đăng nhập"
-                                    disabled={loading}
-                                />
-                            </Form.Item>
-
-                            <Form.Item
-                                name="email"
-                                label="Email"
-                                rules={[
-                                    { required: true, message: 'Vui lòng nhập email' },
-                                    {
-                                        type: 'email',
-                                        message: 'Email không hợp lệ',
-                                    },
-                                ]}
-                            >
-                                <Input
-                                    prefix={<MailOutlined />}
-                                    placeholder="email@example.com"
-                                    disabled={loading}
-                                />
-                            </Form.Item>
-
-                            <Form.Item
-                                name="phone"
-                                label="Số điện thoại"
-                                rules={[
-                                    { required: true, message: 'Vui lòng nhập số điện thoại' },
-                                    {
-                                        pattern: /^[0-9]{9,11}$/,
-                                        message: 'Số điện thoại phải từ 9-11 chữ số',
-                                    },
-                                ]}
-                            >
-                                <Input
-                                    placeholder="Nhập số điện thoại"
-                                    disabled={loading}
-                                />
-                            </Form.Item>
-
-                            <Form.Item
-                                name="password"
-                                label="Mật khẩu"
-                                rules={[
-                                    { required: true, message: 'Vui lòng nhập mật khẩu' },
-                                    { min: 6, message: 'Mật khẩu phải từ 6 ký tự' },
-                                    {
-                                        pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-                                        message:
-                                            'Mật khẩu phải chứa chữ hoa, chữ thường và số',
-                                    },
-                                ]}
-                            >
-                                <Input.Password
-                                    prefix={<LockOutlined />}
-                                    placeholder="Nhập mật khẩu"
-                                    disabled={loading}
-                                />
-                            </Form.Item>
-
-                            <Form.Item
-                                name="confirmPassword"
-                                label="Xác nhận mật khẩu"
-                                rules={[
-                                    { required: true, message: 'Vui lòng xác nhận mật khẩu' },
-                                    ({ getFieldValue }) => ({
-                                        validator(_, value) {
-                                            if (!value || getFieldValue('password') === value) {
-                                                return Promise.resolve();
-                                            }
-                                            return Promise.reject(
-                                                new Error('Mật khẩu xác nhận không khớp!')
-                                            );
-                                        },
-                                    }),
-                                ]}
-                            >
-                                <Input.Password
-                                    prefix={<LockOutlined />}
-                                    placeholder="Xác nhận mật khẩu"
-                                    disabled={loading}
-                                />
-                            </Form.Item>
-
-                            <Form.Item>
-                                <Button
-                                    type="primary"
-                                    htmlType="submit"
-                                    block
-                                    size="large"
-                                    loading={loading}
-                                >
-                                    Đăng kí
+                            <Form.Item style={{ marginTop: 8 }}>
+                                <Button type="primary" htmlType="submit" block size="large" loading={loading} className="btn-submit">
+                                    Đăng ký tài khoản
                                 </Button>
                             </Form.Item>
                         </Form>
 
-                        {/* Divider */}
-                        <Divider>Hoặc</Divider>
+                        <Divider className="custom-divider">Hoặc</Divider>
 
-                        {/* Login Link */}
-                        <Button
-                            type="default"
-                            block
-                            size="large"
-                            onClick={handleLoginClick}
-                            disabled={loading}
-                        >
+                        <Button type="default" block size="large" onClick={() => history.push('/auth/login')} disabled={loading} className="btn-secondary">
                             Đã có tài khoản? Đăng nhập
                         </Button>
 
-                        {/* Footer Links */}
                         <div className="login-page-footer">
-                            <p style={{ marginTop: '20px' }}>
-                                Bằng cách đăng kí, bạn đồng ý với{' '}
-                                <a href="/terms">Điều khoản dịch vụ</a>
-                            </p>
+                            <p>Bằng cách đăng ký, bạn đồng ý với Điều khoản dịch vụ</p>
                         </div>
                     </Card>
                 </Col>
-            </Row >
-        </div >
+            </Row>
+        </div>
     );
 };
 

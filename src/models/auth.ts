@@ -5,6 +5,7 @@ export interface User {
     username: string;
     email: string;
     fullName: string;
+    phone?: string;
     avatar?: string;
     roles: string[];
     permissions: string[];
@@ -45,9 +46,7 @@ export interface Permission {
 
 export enum UserRole {
     ADMIN = 'ADMIN',
-    STAFF = 'STAFF',
-    VET = 'VET',
-    RECEPTIONIST = 'RECEPTIONIST',
+    DOCTOR = 'DOCTOR',
     CUSTOMER = 'CUSTOMER',
 }
 

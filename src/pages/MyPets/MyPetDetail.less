@@ -1,0 +1,92 @@
+.container {
+    padding: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+
+    // Responsive padding cho Mobile
+    @media (max-width: 576px) {
+        padding: 12px;
+    }
+
+    // Tinh chỉnh header card gọn gàng hơn trên mobile
+    :global {
+        .ant-card-head {
+            @media (max-width: 576px) {
+                padding: 0 12px;
+                font-size: 16px;
+            }
+        }
+
+        .ant-card-head-title {
+            padding: 12px 0;
+        }
+
+        .ant-card-body {
+            @media (max-width: 576px) {
+                padding: 12px;
+            }
+        }
+
+        .ant-tabs-nav {
+            @media (max-width: 576px) {
+                margin-bottom: 12px;
+            }
+        }
+    }
+
+    .avatarSection {
+        text-align: center;
+        padding: 24px 16px;
+        background: linear-gradient(180deg, #ffffff 0%, #f9f9f9 100%);
+        border: 1px solid #f0f0f0;
+        border-radius: 8px;
+        margin-bottom: 24px;
+
+        @media (max-width: 576px) {
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+    }
+
+    .avatarWrapper {
+        &:hover .avatarOverlay {
+            opacity: 1 !important;
+        }
+    }
+
+    .avatarOverlay {
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    // Card chứa Table/Timeline bệnh án
+    .medicalCard {
+        margin-bottom: 24px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+
+        @media (max-width: 576px) {
+            margin-bottom: 16px;
+        }
+    }
+
+    // Tiêu đề phụ linh hoạt trên mobile
+    .cardHeaderFlex {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+
+        @media (max-width: 480px) {
+            flex-direction: column;
+            align-items: flex-start;
+
+            button {
+                width: 100%; // Nút "Thêm mới" kéo dài hết cỡ trên mobile nhỏ
+            }
+        }
+    }
+
+
+}

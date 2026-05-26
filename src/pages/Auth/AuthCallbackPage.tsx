@@ -29,8 +29,8 @@ const AuthCallbackPage: React.FC = () => {
                 await authService.keycloakLogin(code, state || undefined);
                 message.success('Đăng nhập thành công!');
 
-                // Redirect to dashboard
-                history.replace('/dashboard');
+                // Redirect to home page using window.location.replace for hash routing
+                window.location.replace(window.location.origin + '/#/');
             } catch (error: any) {
                 const errorMsg = error?.message || 'Keycloak authentication failed';
                 setError(errorMsg);

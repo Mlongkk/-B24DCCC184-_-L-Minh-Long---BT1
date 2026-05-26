@@ -8,7 +8,15 @@ import {
 } from '@/models/customer';
 import authService from '@/services/auth/authService';
 
-const API_BASE = 'https://ript1307-nhom-4-kthp-backend.onrender.com/api';
+const API_BASE = window.location.hostname === 'localhost'
+    ? 'http://localhost:4000/api'
+    : 'https://ript1307-nhom-4-kthp-backend.onrender.com/api';
+
+// Helper to extract data from response (handles nested data field)
+const extractData = (response: any) => {
+    if (response?.data) return response.data;
+    return response;
+};
 
 class CustomerService {
     private http: AxiosInstance;
@@ -34,7 +42,7 @@ class CustomerService {
     async getCustomers(filters?: CustomerSearchFilters): Promise<CustomerListResponse> {
         try {
             const response = await this.http.get('/', { params: filters });
-            return response.data;
+            return extractData(response.data);
         } catch (error) {
             console.error('Failed to fetch customers', error);
             throw error;
@@ -47,7 +55,8 @@ class CustomerService {
     async getCustomerById(id: string): Promise<Customer> {
         try {
             const response = await this.http.get(`/${id}`);
-            return response.data;
+            const data = extractData(response.data);
+            return data?.data || data;
         } catch (error) {
             console.error('Failed to fetch customer', error);
             throw error;
@@ -60,7 +69,8 @@ class CustomerService {
     async createCustomer(data: CreateCustomerRequest): Promise<Customer> {
         try {
             const response = await this.http.post('/', data);
-            return response.data;
+            const responseData = extractData(response.data);
+            return responseData?.data || responseData;
         } catch (error) {
             console.error('Failed to create customer', error);
             throw error;
@@ -73,7 +83,8 @@ class CustomerService {
     async updateCustomer(id: string, data: Partial<CreateCustomerRequest>): Promise<Customer> {
         try {
             const response = await this.http.put(`/${id}`, data);
-            return response.data;
+            const responseData = extractData(response.data);
+            return responseData?.data || responseData;
         } catch (error) {
             console.error('Failed to update customer', error);
             throw error;
@@ -100,7 +111,8 @@ class CustomerService {
             const response = await this.http.get('/search', {
                 params: { q: query },
             });
-            return response.data;
+            const data = extractData(response.data);
+            return Array.isArray(data) ? data : data?.data || [];
         } catch (error) {
             console.error('Failed to search customers', error);
             throw error;
@@ -113,7 +125,8 @@ class CustomerService {
     async getCustomerPets(customerId: string): Promise<any[]> {
         try {
             const response = await this.http.get(`/${customerId}/pets`);
-            return response.data;
+            const data = extractData(response.data);
+            return Array.isArray(data) ? data : data?.data || [];
         } catch (error) {
             console.error('Failed to fetch customer pets', error);
             throw error;
@@ -126,7 +139,8 @@ class CustomerService {
     async getCustomerAppointments(customerId: string): Promise<any[]> {
         try {
             const response = await this.http.get(`/${customerId}/appointments`);
-            return response.data;
+            const data = extractData(response.data);
+            return Array.isArray(data) ? data : data?.data || [];
         } catch (error) {
             console.error('Failed to fetch customer appointments', error);
             throw error;

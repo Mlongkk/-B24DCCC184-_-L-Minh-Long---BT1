@@ -1,5 +1,215 @@
+// AppointmentBooking.less
+
 .container {
-    padding: 40px 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 40px 24px;
+    background: #f5f7fa;
     min-height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    /* Bỏ align-items: flex-start cũ đi để Grid tự bung theo chiều ngang */
+}
+
+.bookingCard {
+    width: 100%;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    padding: 32px;
+    /* Tăng padding một chút cho không gian thoáng đãng */
+    background: #ffffff;
+    box-sizing: border-box;
+}
+
+.headerArea {
+    text-align: center;
+    margin-bottom: 32px;
+
+    .mainTitle {
+        font-size: 26px;
+        font-weight: 700;
+        color: #1f1f1f;
+        margin-bottom: 8px;
+        letter-spacing: -0.5px;
+    }
+
+    .subTitle {
+        color: #8c8c8c;
+        font-size: 14px;
+    }
+}
+
+// Sửa tận gốc lỗi co cụm, vỡ chữ, đè chữ của thanh Steps Antd
+.customSteps {
+    margin: 0 auto 12px auto;
+    max-width: 100%;
+    padding: 0 8px;
+
+    :global(.ant-steps-item-title) {
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        color: #595959 !important;
+        line-height: 1.4 !important;
+    }
+
+    :global(.ant-steps-item-active .ant-steps-item-title) {
+        color: #1890ff !important;
+        font-weight: 600 !important;
+    }
+}
+
+.stepContent {
+    min-height: 280px;
+    padding: 12px 4px;
+}
+
+.stepTitle {
+    font-size: 18px;
+    font-weight: 600;
+    color: #262626;
+    margin-bottom: 24px;
+    position: relative;
+    padding-left: 12px;
+
+    // Thanh line màu xanh nhỏ đầu danh mục tạo điểm nhấn
+    &::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 4px;
+        bottom: 4px;
+        width: 4px;
+        background: #1890ff;
+        border-radius: 2px;
+    }
+}
+
+// Tối ưu danh sách chọn Thú cưng dưới dạng các Card độc lập
+.petRadioGroup {
+    width: 100%;
+
+    :global(.ant-radio-button-wrapper) {
+        display: block;
+        width: 100%;
+        height: auto;
+        padding: 16px 20px;
+        border-radius: 10px !important;
+        border: 1px solid #f0f0f0 !important;
+        background: #fafafa;
+        box-shadow: none;
+        transition: all 0.25s ease;
+
+        // Loại bỏ đường gạch dọc mặc định cực xấu của Antd giữa các ô Radio
+        &::before {
+            display: none !important;
+        }
+
+        &:hover {
+            border-color: #40a9ff !important;
+            background: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+    }
+
+    // Khi người dùng bấm chọn Thú cưng (Trạng thái Active)
+    :global(.ant-radio-button-wrapper-checked) {
+        background: #e6f7ff !important; // Đổi nền sang màu xanh nhạt dịu mắt
+        border-color: #1890ff !important; // Viền xanh thương hiệu Antd
+        box-shadow: 0 4px 12px rgba(24, 144, 255, 0.12) !important;
+
+        .petName {
+            color: #1890ff;
+        }
+
+        .petSpecies {
+            color: #40a9ff;
+        }
+    }
+}
+
+.petCardContent {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-align: left;
+}
+
+.petName {
+    font-size: 16px;
+    font-weight: 600;
+    color: #262626;
+    transition: color 0.2s ease;
+}
+
+.petSpecies {
+    font-size: 12px;
+    color: #8c8c8c;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: color 0.2s ease;
+}
+
+// Hỗ trợ căn giữa cho DatePicker ở Step tiếp theo
+.centerWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.customDatePicker {
+    width: 100%;
+    max-width: 400px;
+}
+
+// Định dạng Radio Mức độ khẩn cấp (Step 3) thành các nút tab vuông vắn
+.priorityRadio {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+
+    :global(.ant-radio-button-wrapper) {
+        flex: 1;
+        text-align: center;
+        border-radius: 6px !important;
+        border: 1px solid #d9d9d9 !important;
+
+        &::before {
+            display: none !important;
+        }
+    }
+}
+
+// Khu vực xác nhận thông tin (Step 4)
+.confirmDesc {
+    background: #fafafa;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+// Thanh điều hướng quay lại / tiếp theo nằm ở dưới cùng
+.footerAction {
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.submitBtn {
+    background: #52c41a;
+    border-color: #52c41a;
+
+    &:hover,
+    &:focus {
+        background: #73d13d;
+        border-color: #73d13d;
+    }
+}
+
+.centerSpin {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 0;
 }

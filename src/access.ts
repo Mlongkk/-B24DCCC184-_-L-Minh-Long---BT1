@@ -1,4 +1,5 @@
 import type { IInitialState } from './services/base/typing';
+import authService from '@/services/auth/authService';
 // import { currentRole } from './utils/ip';
 
 /**
@@ -7,58 +8,29 @@ import type { IInitialState } from './services/base/typing';
 export default function access(initialState: IInitialState) {
 	// const scopes = initialState.authorizedPermissions?.find((item) => item.rsname === currentRole)?.scopes;
 	const scopes = initialState.authorizedPermissions?.map((item) => item.scopes).flat();
+	const user = authService.getCurrentUser();
+	const roles = user?.roles || [];
 
 	return {
-		// canBoQLKH: token && vaiTro && vaiTro === 'can_bo_qlkh',
-		// lanhDao: token && vaiTro && vaiTro === 'lanh_dao',
-		// sinhVienVaNhanVien: token && vaiTro && ['nhan_vien', 'sinh_vien'].includes(vaiTro),
-		// adminVaCanBoQLKH: token && vaiTro && ['Admin', 'can_bo_qlkh'].includes(vaiTro),
-		// nhanVienVaCanBoQLKH: token && vaiTro && ['nhan_vien', 'can_bo_qlkh'].includes(vaiTro),
-		// adminVaQuanTri: token && vaiTro && ['Admin', 'quan_tri'].includes(vaiTro),
-		// admin: (token && vaiTro && vaiTro === 'Admin') || false,
-		// nhanVien: (token && vaiTro && vaiTro === 'nhan_vien') || false,
-		// keToan: (token && vaiTro && vaiTro === 'ke_toan') || false,
-		// sinhVien: (token && vaiTro && vaiTro === 'sinh_vien') || false,
-		// quanTri: (token && vaiTro && vaiTro === 'quan_tri') || false,
-		// chuyenVien: (token && vaiTro && vaiTro === 'chuyen_vien') || false,
-		// adminVaQuanTriVaNhanVien:
-		//   (token &&
-		//     vaiTro &&
-		//     (vaiTro === 'Admin' || vaiTro === 'quan_tri' || vaiTro === 'nhan_vien')) ||
-		//   false,
-		// guest: (token && ((vaiTro && vaiTro === 'Guest') || !vaiTro)) || false,
-		accessFilter: (route: any) => scopes?.includes(route?.maChucNang) || false,
-		manyAccessFilter: (route: any) => route?.listChucNang?.some((role: string) => scopes?.includes(role)) || false,
-		// adminAccessFilter: (route: any) =>
-		//   (token && vaiTro && vaiTro === 'Admin') ||
-		//   initialState?.phanNhom?.nhom_vai_tro?.includes(route?.maChucNang) ||
-		//   false,
-		// adminManyAccessFilter: (route: any) =>
-		//   (token && vaiTro && vaiTro === 'Admin') ||
-		//   route?.listChucNang?.filter((role: string) =>
-		//     initialState?.phanNhom?.nhom_vai_tro?.includes(role),
-		//   )?.length ||
-		//   false,
-		// nhanVienAccessFilter: (route: any) =>
-		//   (token && vaiTro && vaiTro === 'nhan_vien') ||
-		//   (token && vaiTro && vaiTro === 'Admin') ||
-		//   initialState?.phanNhom?.nhom_vai_tro?.includes(route?.maChucNang) ||
-		//   false,
-		// routeFilter: (route: any) =>
-		//   (token && vaiTro && vaiTro === 'Admin') ||
-		//   (token && vaiTro && initialState?.phanNhom?.nhom_vai_tro?.includes(route?.maChucNang)) ||
-		//   false,
-		// routeFilterCanBoQLKHDonVi: (route: any) => {
-		//   return handlePhanNhom(initialState, route?.maChucNang) && isCanBoQLKHDonVi;
-		// },
-		// routeFilterCanBoPhongQLKH: (route: any) => {
-		//   return handlePhanNhom(initialState, route?.maChucNang) && isCanBoPhongQLKH;
-		// },
-		// sinhVienRouteFilter:
-		//   vaiTro === 'sinh_vien'
-		//     ? true
-		//     : (route: any) => {
-		//         return handlePhanNhom(initialState, route?.maChucNang) || false;
-		//       },
+		// ===== ROLE-BASED ACCESS =====
+		isAdmin: roles.includes('ADMIN'),
+		isDoctor: roles.includes('DOCTOR'),
+		isCustomer: roles.includes('CUSTOMER'),
+
+		// ===== ROUTE ACCESS CONTROL =====
+		// Admin: Xem tất cả
+		adminOnly: roles.includes('ADMIN'),
+
+		// Doctor: Không xem Quản lý người dùng, không xem Đặt lịch
+		doctorManagement: roles.includes('DOCTOR') || roles.includes('ADMIN'),
+		doctorBooking: !roles.includes('DOCTOR'), // Doctor không thấy "Đặt lịch" option
+
+		// Customer: Chỉ xem Trang chủ + Đặt lịch
+		customerAccess: roles.includes('CUSTOMER'),
+		adminAndDoctor: roles.includes('ADMIN') || roles.includes('DOCTOR'),
+
+		// ===== LEGACY ACCESS CONTROL =====
+		// accessFilter: (route: any) => scopes?.includes(route?.maChucNang) || false,
+		// manyAccessFilter: (route: any) => route?.listChucNang?.some((role: string) => scopes?.includes(role)) || false,
 	};
 }

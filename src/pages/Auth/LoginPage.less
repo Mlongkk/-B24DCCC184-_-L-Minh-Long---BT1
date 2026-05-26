@@ -1,107 +1,196 @@
-.login-page-container {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    padding: 20px 0;
+// ==========================================
+// ĐỊNH NGHĨA CÁC HIỆU ỨNG ANIMATION (KEYFRAMES)
+// ==========================================
 
-    :global(.ant-row) {
+// 1. Hiệu ứng load trang: Trượt mượt từ dưới lên và hiện hình
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// 2. Hiệu ứng mạch đập phát sáng cho Logo thương hiệu
+@keyframes logoPulse {
+    0% {
+        filter: drop-shadow(0 0 2px rgba(24, 144, 255, 0.2));
+        transform: scale(1);
+    }
+    50% {
+        filter: drop-shadow(0 0 12px rgba(47, 84, 235, 0.6));
+        transform: scale(1.02); // Hơi nở nhẹ ra 2%
+    }
+    100% {
+        filter: drop-shadow(0 0 2px rgba(24, 144, 255, 0.2));
+        transform: scale(1);
+    }
+}
+
+
+// ==========================================
+// GIAO DIỆN CHÍNH
+// ==========================================
+
+.login-page-container {
+    background-image: 
+        linear-gradient(135deg, rgba(30, 60, 114, 0.2) 0%, rgba(42, 82, 152, 0.2) 100%), 
+        url("https://st.quantrimang.com/photos/image/2018/09/27/hinh-nen-meo-de-thuong-39.jpg");
+    
+    background-size: cover;
+    background-position: right center; 
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; 
+    padding: 24px 24px 24px 6%; // Đẩy nhẹ lề trái thêm chút cho thoáng chú mèo
+
+    .login-row {
         width: 100%;
+        max-width: 1200px;
+        margin: 0;
     }
 
     .login-page-card {
-        border-radius: 12px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-        padding: 40px;
-        border: none;
-        background: white;
+        border-radius: 24px; // Bo góc mềm mại kiểu Apple hiện đại
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12); 
+        border: 1px solid rgba(255, 255, 255, 0.4); // Viền mảnh giả kính cường lực
+        background: rgba(255, 255, 255, 0.94); 
+        backdrop-filter: blur(15px); // Tăng độ mờ nền kính phía sau
+
+        // Áp dụng hiệu ứng xuất hiện khi vào trang
+        animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        
+        // Cấu hình mượt mà cho hiệu ứng hover sau này
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                    box-shadow 0.4s ease, 
+                    background 0.3s ease;
+
+        // HIỆU ỨNG HOVER KHỐI KÍNH: Khi di chuột vào, Card sẽ phản hồi lại
+        &:hover {
+            transform: translateY(-6px); // Nhấc nhẹ chiếc Card lên không trung
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.2); // Đổ bóng sâu và mịn hơn
+            background: rgba(255, 255, 255, 0.97); // Làm sáng rõ nét khối trắng lên một chút
+        }
 
         :global(.ant-card-body) {
-            padding: 0;
+            padding: 45px 40px;
         }
 
         .login-page-header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 35px;
 
             h1 {
-                font-size: 32px;
-                font-weight: bold;
-                color: #667eea;
-                margin: 0 0 8px 0;
+                font-size: 34px;
+                font-weight: 900;
+                letter-spacing: -0.5px;
+                display: inline-block; // Cần thiết để hiệu ứng scale hoạt động chuẩn tâm
+                
+                background: linear-gradient(135deg, #1890ff 0%, #2f54eb 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                margin: 0 0 6px 0;
+
+                // Áp dụng hiệu ứng nhịp đập phát sáng liên tục cho Logo thương hiệu
+                animation: logoPulse 4s ease-in-out infinite; 
             }
 
             p {
-                color: #999;
+                color: #737373;
                 margin: 0;
-                font-size: 14px;
+                font-size: 14.5px;
+                font-weight: 400;
             }
         }
 
         :global(.ant-form) {
-            margin-bottom: 20px;
+            // Sửa lỗi nền xanh Autofill của Chrome
+            :global(.ant-input-affix-wrapper) {
+                transition: all 0.2s ease;
+                border-radius: 10px;
 
-            :global(.ant-form-item) {
-                margin-bottom: 16px;
-
-                &:last-child {
-                    margin-bottom: 0;
+                input:-webkit-autofill,
+                input:-webkit-autofill:hover, 
+                input:-webkit-autofill:focus {
+                    -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important;
+                    box-shadow: 0 0 0px 1000px #ffffff inset !important;
                 }
             }
-
-            :global(.ant-input),
-            :global(.ant-input-password) {
-                height: 40px;
-                font-size: 14px;
-
-                :global(.ant-input-prefix) {
-                    margin-right: 8px;
-                }
+            
+            // Hiệu ứng nhẹ khi focus vào các ô nhập liệu
+            :global(.ant-input-affix-wrapper-focused) {
+                transform: scale(1.01); // Ô nhập hơi nở rộng nhẹ khi đang gõ
             }
         }
 
-        :global(.ant-divider) {
-            margin: 20px 0;
-            color: #d9d9d9;
-        }
+        // Tinh chỉnh nút Submit chính mượt mà
+        .btn-submit {
+            border-radius: 10px;
+            font-weight: 600;
+            height: auto;
+            padding: 12px 20px;
+            background: linear-gradient(90deg, #1890ff 0%, #2f54eb 100%);
+            border: none;
+            transition: all 0.3s ease;
 
-        :global(.ant-btn) {
-            height: 40px;
-            font-size: 16px;
-            margin-bottom: 16px;
-
-            &:last-of-type {
-                margin-bottom: 0;
+            &:hover {
+                opacity: 0.95;
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+            }
+            &:active {
+                transform: translateY(1px);
             }
         }
 
-        .login-page-footer {
-            text-align: center;
-            margin-top: 20px;
+        .btn-secondary, .btn-keycloak {
+            border-radius: 10px;
+            font-size: 15px;
+            height: auto;
+            padding: 11px 20px;
+            transition: all 0.2s ease;
+        }
 
-            p {
-                margin: 8px 0;
-                color: #666;
-                font-size: 14px;
-
-                a {
-                    color: #667eea;
-                    text-decoration: none;
-
-                    &:hover {
-                        text-decoration: underline;
-                    }
-                }
-            }
+        .custom-divider {
+            margin: 26px 0;
+            color: #c9c9c9;
         }
     }
 }
 
+// ==========================================
+// ĐÁP ỨNG RESPONSIVE TRÊN MOBILE
+// ==========================================
 @media (max-width: 768px) {
     .login-page-container {
-        .login-page-card {
-            padding: 24px;
+        padding: 16px; 
+        justify-content: center;
+        background-position: center;
 
-            .login-page-header h1 {
-                font-size: 24px;
+        .login-row {
+            margin: 0 auto;
+        }
+
+        .login-page-card {
+            border-radius: 16px;
+            // Trên điện thoại, tắt hiệu ứng hover di chuột (vì mobile dùng cảm ứng chạm)
+            &:hover {
+                transform: none;
+                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+            }
+            
+            // Rút ngắn thời gian load trên mobile tránh cảm giác chờ đợi
+            animation: fadeInUp 0.7s ease-out forwards;
+            
+            :global(.ant-card-body) {
+                padding: 35px 20px;
             }
         }
     }

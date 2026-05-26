@@ -1,39 +1,689 @@
+:root {
+    --brand-primary: #E8592E;
+    --brand-primary-light: #FDF0EB;
+    --brand-primary-dark: #BA431E;
+    --bg-cream: #FAF7F2;
+    --bg-white: #FFFFFF;
+    --text-main: #2C1A0E;
+    --text-muted: #6E5E52;
+    --border-color: rgba(44, 26, 14, 0.08);
+    --shadow-premium: 0 12px 36px rgba(44, 26, 14, 0.04);
+
+    --pet-color: #4A7C59;
+    --pet-bg: #EAF3DE;
+    --booking-color: #3B6FA5;
+    --booking-bg: #E6F0FA;
+    --history-color: #D29514;
+    --history-bg: #FDF6E2;
+}
+
 .customerDashboard {
-    padding: 24px;
+    background-color: var(--bg-cream);
+    min-height: 120vh; // Đảm bảo trang luôn đủ độ dài dốc cuộn
+    border-radius: 24px;
+    margin: 10px; // Tạo khoảng cách với mép màn hình để thấy rõ góc bo
+    box-shadow: var(--shadow-premium);
 
-    .welcomeCard {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-        margin-bottom: 24px;
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        width: 100%;
 
-        h1 {
-            color: white;
-            margin-bottom: 8px;
+    }
+
+    // --- Welcome Hero Section ---
+    // --- Welcome Hero Section ---
+    .welcomeSection {
+        padding: 80px 24px;
+        position: relative;
+        background: linear-gradient(180deg, #FFFFFF 0%, var(--bg-cream) 100%);
+        box-shadow: var(--shadow-premium);
+        overflow: hidden;
+        will-change: transform, opacity;
+        transition: transform 0.1s linear, opacity 0.1s linear;
+
+        .container {
+            position: relative;
+            width: 100%;
         }
 
-        p {
-            color: rgba(255, 255, 255, 0.8);
+        // Hiệu ứng xuất hiện mượt mà cho phần chữ
+        .welcomeContent {
+            .welcomeBadge {
+                animation: fadeUpIn 0.6s ease forwards;
+            }
+
+            .welcomeTitle {
+                opacity: 0;
+                animation: fadeUpIn 0.6s 0.15s ease forwards;
+            }
+
+            .welcomeDesc {
+                opacity: 0;
+                animation: fadeUpIn 0.6s 0.3s ease forwards;
+            }
+        }
+
+        .welcomeVisualCol {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .welcomeVisual {
+            will-change: transform;
+            transition: transform 0.1s linear;
+            animation: floatEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        // Vòng tròn bọc ngoài Avatar
+        .welcomeCircle {
+            width: 220px;
+            height: 220px;
+            background: #FFFFFF;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 20px 40px rgba(232, 89, 46, 0.15);
+            border: 4px solid #FFFFFF;
+            transition: all 0.3s ease;
+
+            &:hover {
+                transform: scale(1.05);
+                box-shadow: 0 25px 50px rgba(232, 89, 46, 0.25);
+            }
+        }
+
+        // Định dạng Avatar chữ L lớn giống như ảnh
+        .avatar {
+            width: 100%;
+            height: 100%;
+            background: var(--brand-primary); // Màu cam chủ đạo của bạn
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 84px;
+            font-weight: 800;
+            color: #FFFFFF;
+            border-radius: 50%;
+        }
+
+        // Tối ưu hình ảnh thú cưng nền (welcomeBg)
+        .welcomeBg {
+
+            pointer-events: none; // Ngăn chặn người dùng click nhầm vào ảnh
+            filter: drop-shadow(0 15px 20px rgba(0, 0, 0, 0.06));
+            will-change: transform;
+            transition: transform 0.1s linear;
+            animation: floatEntrance 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    }
+
+    // --- Keyframes phục vụ chuyển động lúc tải trang ---
+    @keyframes fadeUpIn {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes floatEntrance {
+        from {
+            opacity: 0;
+            transform: scale(0.9) translateY(40px);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+
+    .welcomeBadge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--brand-primary-light);
+        color: var(--brand-primary-dark);
+        font-size: 13px;
+        font-weight: 600;
+        padding: 6px 16px;
+        border-radius: 100px;
+        margin-bottom: 24px;
+        animation: fadeUpIn 0.6s ease forwards;
+    }
+
+    .badgeDot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--brand-primary);
+        box-shadow: 0 0 8px var(--brand-primary);
+    }
+
+    .welcomeTitle {
+        font-size: clamp(34px, 4.5vw, 52px);
+        font-weight: 800;
+        color: var(--text-main);
+        line-height: 1.15;
+        margin: 0 0 16px 0;
+        letter-spacing: -0.02em;
+        animation: fadeUpIn 0.6s 0.1s ease forwards;
+        opacity: 0;
+
+        em {
+            font-style: normal;
+            color: var(--brand-primary);
+        }
+    }
+
+    .welcomeDesc {
+        font-size: 16px;
+        color: var(--text-muted);
+        line-height: 1.7;
+        max-width: 540px;
+        margin: 0 0 32px 0;
+        animation: fadeUpIn 0.6s 0.2s ease forwards;
+        opacity: 0;
+    }
+
+    .welcomeStats {
+        animation: fadeUpIn 0.6s 0.3s ease forwards;
+        opacity: 0;
+        border-top: 1px solid var(--border-color);
+        padding-top: 24px;
+        max-width: 400px;
+
+        :global(.ant-statistic-title) {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        :global(.ant-statistic-content) {
+            color: var(--text-main);
+            font-weight: 700;
+            font-size: 24px;
+        }
+
+        :global(.ant-statistic-content-prefix) {
+            color: var(--brand-primary);
+            margin-right: 8px;
+        }
+    }
+
+    .welcomeVisualCol {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .welcomeVisual {
+        animation: fadeIn 0.8s 0.3s ease forwards;
+        opacity: 0;
+    }
+
+    .welcomeCircle {
+        width: 190px;
+        height: 190px;
+        border-radius: 50%;
+        background: var(--bg-white);
+        box-shadow: 0 20px 45px rgba(44, 26, 14, 0.06);
+        padding: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(232, 89, 46, 0.08);
+
+        .avatar {
+            width: 100% !important;
+            height: 100% !important;
+            border-radius: 50%;
+            background: var(--brand-primary) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 68px !important;
+            font-weight: 700;
+            color: #FFFFFF;
+        }
+    }
+
+    // --- Cấu trúc tái sử dụng cho các Section Reveal khi cuộn ---
+    .menuSection,
+    .articlesSection,
+    .infoSection {
+        padding: 80px 24px;
+
+        // Trạng thái mặc định khi nằm ngoài màn hình (Cuộn qua hoặc chưa cuộn tới)
+        opacity: 0;
+        transform: translateY(40px);
+        scale: 0.98; // Thêm hiệu ứng thu nhỏ nhẹ khi ẩn để tạo chiều sâu không gian (3D depth)
+
+        // Thời gian và gia tốc phản hồi khi ẨN ĐI
+        transition:
+            opacity 0.6s ease-in-out,
+            transform 0.6s cubic-bezier(0.4, 0, 1, 1),
+            scale 0.6s ease-in-out;
+
+        // Trạng thái khi hiển thị trên màn hình (Cuộn trúng)
+        &.visible {
+            opacity: 1;
+            transform: translateY(0);
+            scale: 1;
+
+            // Thời gian và gia tốc phản hồi khi HIỆN LÊN (mượt và êm hơn)
+            transition:
+                opacity 0.8s ease-out,
+                transform 0.8s cubic-bezier(0.215, 0.61, 0.355, 1),
+                scale 0.8s cubic-bezier(0.215, 0.61, 0.355, 1);
+
+            .menuCard,
+            .articleCard,
+            .infoCard {
+                animation: fadeUpIn 0.6s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
+            }
+        }
+    }
+
+    .menuSection {
+        background: var(--bg-white);
+    }
+
+    .articlesSection {
+        background: var(--bg-cream);
+    }
+
+    .infoSection {
+        background: var(--bg-white);
+    }
+
+    .sectionHeader {
+        margin-bottom: 48px;
+        text-align: center;
+
+        .sectionTitle {
+            font-size: 30px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 0 0 10px 0;
+            letter-spacing: -0.01em;
+        }
+
+        .sectionDesc {
+            font-size: 15px;
+            color: var(--text-muted);
             margin: 0;
         }
     }
 
-    .statsRow {
-        margin-bottom: 24px;
-    }
+    // --- Menu Cards Style ---
+    .menuCard {
+        height: 100%;
+        border-radius: 16px;
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-premium);
+        background: var(--bg-white);
+        opacity: 0; // Để mặc định ẩn, khi visible sẽ kích hoạt animation
 
-    .statCard {
-        text-align: center;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        :global(.ant-card-body) {
+            padding: 36px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            height: 100%;
+        }
 
-        :global(.ant-statistic-title) {
-            margin-bottom: 16px;
+        .menuCardIcon {
+            font-size: 30px;
+            width: 64px;
+            height: 64px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .menuCardTitle {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 0 0 12px 0;
+        }
+
+        .menuCardDesc {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 24px;
+            flex-grow: 1;
+        }
+
+        .menuCardBtn {
+            color: var(--brand-primary);
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 0;
+            height: auto;
+
+            &:hover {
+                color: var(--brand-primary-dark) !important;
+                background: transparent !important;
+
+                :global(.anticon) {
+                    transform: translateX(4px);
+                }
+            }
+
+            :global(.anticon) {
+                transition: transform 0.2s ease;
+            }
+        }
+
+        &:hover {
+            transform: translateY(-8px) !important;
+            box-shadow: 0 20px 40px rgba(44, 26, 14, 0.08);
+            border-color: transparent;
+
+            .menuCardIcon {
+                transform: scale(1.08);
+            }
+        }
+
+        &.petCard {
+            .menuCardIcon {
+                background: var(--pet-bg);
+                color: var(--pet-color);
+            }
+
+            &:hover {
+                border-top: 4px solid var(--pet-color);
+            }
+        }
+
+        &.bookingCard {
+            .menuCardIcon {
+                background: var(--booking-bg);
+                color: var(--booking-color);
+            }
+
+            &:hover {
+                border-top: 4px solid var(--booking-color);
+            }
+        }
+
+        &.historyCard {
+            .menuCardIcon {
+                background: var(--history-bg);
+                color: var(--history-color);
+            }
+
+            &:hover {
+                border-top: 4px solid var(--history-color);
+            }
         }
     }
 
-    .appointmentsCard {
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    // --- Article Cards Style ---
+    .articleCard {
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-premium);
+        height: 100%;
+        opacity: 0;
+
+        :global(.ant-card-body) {
+            padding: 24px;
+        }
+
+        .articleImg {
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .articleTag {
+            display: inline-block;
+            background: rgba(44, 26, 14, 0.05);
+            color: var(--text-main);
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+        }
+
+        .articleTitle {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.4;
+            margin: 0 0 20px 0;
+            height: 44px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .articleFooter {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(44, 26, 14, 0.04);
+            padding-top: 12px;
+
+            :global(.ant-btn) {
+                padding: 0;
+                height: auto;
+                color: var(--brand-primary);
+
+                &:hover {
+                    color: var(--brand-primary-dark);
+                }
+            }
+        }
+
+        &:hover {
+            transform: translateY(-6px) !important;
+            box-shadow: 0 16px 32px rgba(44, 26, 14, 0.08);
+
+            .articleImg {
+                transform: scale(1.04);
+            }
+        }
+    }
+
+    // --- Info & Contact Section ---
+    .infoCard {
+        border-radius: 16px;
+        box-shadow: var(--shadow-premium);
+        border: 1px solid var(--border-color);
+        height: 100%;
+        opacity: 0;
+
+        :global(.ant-card-head) {
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 24px;
+
+            :global(.ant-card-head-title) {
+                font-size: 16px;
+                font-weight: 700;
+                color: var(--text-main);
+            }
+        }
+
+        :global(.ant-card-body) {
+            padding: 24px;
+        }
+    }
+
+    .infoList {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .infoItem {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 14px;
+        border-bottom: 1px solid rgba(44, 26, 14, 0.04);
+
+        &:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+    }
+
+    .infoLabel {
+        color: var(--text-muted);
+        font-size: 14px;
+    }
+
+    .infoValue {
+        color: var(--text-main);
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .infoValueBadge {
+        background: var(--brand-primary-light);
+        color: var(--brand-primary-dark);
+        font-size: 12px;
+        font-weight: 600;
+        padding: 4px 12px;
+        border-radius: 6px;
+    }
+
+    .helpText {
+        font-size: 14px;
+        color: var(--text-muted);
+        line-height: 1.6;
+        margin: 0 0 20px 0;
+    }
+
+    .helpLinks {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .helpLinkItem {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 12px 16px;
+        background: var(--bg-white);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        text-decoration: none;
+        transition: all 0.2s ease;
+
+        .helpIcon {
+            font-size: 18px;
+            color: var(--brand-primary);
+            width: 36px;
+            height: 36px;
+            background: var(--brand-primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        .helpDetails {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .helpLabel {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .helpData {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        &:hover {
+            border-color: var(--brand-primary);
+            background: var(--brand-primary-light);
+
+            .helpData {
+                color: var(--brand-primary-dark);
+            }
+        }
+    }
+
+    // --- Keyframe Animations ---
+    @keyframes fadeUpIn {
+        from {
+            opacity: 0;
+            transform: translateY(24px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    // --- Responsive Media Queries ---
+    @media (max-width: 992px) {
+        .welcomeSection {
+            padding: 60px 24px;
+            text-align: center;
+        }
+
+        .welcomeBadge {
+            margin: 0 auto 20px auto;
+        }
+
+        .welcomeDesc {
+            margin: 0 auto 24px auto;
+        }
+
+        .welcomeStats {
+            margin: 0 auto;
+        }
+
+        .welcomeVisualCol {
+            order: -1;
+            margin-bottom: 24px;
+        }
+
+        .menuSection,
+        .articlesSection,
+        .infoSection {
+            padding: 50px 24px;
+        }
     }
 }

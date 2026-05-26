@@ -144,7 +144,7 @@ import service from '../../../services/...';  // ← DÙNG @/
 const customers = useState([]);  // ← PHẢI <Customer[]>
 
 // ❌ Sai - Đừng hardcode URL
-const API = 'http://localhost:3000/api';  // ← DÙNG env variable
+const API = 'http://localhost:4000/api';  // ← DÙNG env variable
 ```
 
 ---
@@ -154,7 +154,7 @@ const API = 'http://localhost:3000/api';  // ← DÙNG env variable
 Tạo file `.env` hoặc config trong `config/config.ts`:
 
 ```env
-REACT_APP_API_URL=http://localhost:3000/api
+REACT_APP_API_URL=http://localhost:4000/api
 REACT_APP_KEYCLOAK_URL=http://localhost:8080
 REACT_APP_KEYCLOAK_REALM=benhnvienabc
 REACT_APP_KEYCLOAK_CLIENT_ID=benhnvienabc-client

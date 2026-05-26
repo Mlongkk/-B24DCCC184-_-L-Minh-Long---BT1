@@ -3,16 +3,22 @@
 export interface Appointment {
     id: string;
     customerId: string;
+    customer_id?: string;
     customerName?: string;
     petId: string;
+    pet_id?: string;
     petName?: string;
     appointmentDate: string;
+    appointment_date?: string;
     startTime: string;
     endTime: string;
     veterinarian?: string;
     veterinarianId?: string;
+    doctor_id?: string;
+    doctorId?: string;
     reason: string;
-    status: 'PENDING' | 'CONFIRMED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+    status: 'CONFIRMED' | 'SCHEDULED' | 'COMPLETED' | 'CANCELLED';
+    priority_level?: 'EMERGENCY' | 'URGENT' | 'NORMAL';
     notes?: string;
     reminderSent: boolean;
     reminderSentAt?: string;
@@ -21,14 +27,11 @@ export interface Appointment {
 }
 
 export interface CreateAppointmentRequest {
-    customerId: string;
-    petId: string;
-    appointmentDate: string;
-    startTime: string;
-    endTime: string;
-    reason: string;
-    veterinarianId?: string;
-    notes?: string;
+    pet_id: string;
+    appointment_date: string;
+    doctor_id?: string;
+    reason?: string;
+    priority_level?: 'EMERGENCY' | 'URGENT' | 'NORMAL';
 }
 
 export interface UpdateAppointmentRequest extends Partial<CreateAppointmentRequest> {
@@ -36,16 +39,25 @@ export interface UpdateAppointmentRequest extends Partial<CreateAppointmentReque
 }
 
 export interface AppointmentListResponse {
+    success: boolean;
     data: Appointment[];
-    total: number;
-    page: number;
-    pageSize: number;
+    pagination: {
+        page: number;
+        limit: number;
+        total: number;
+        totalPages: number;
+    };
 }
 
 export interface AppointmentSearchFilters {
+    limit?: number;
     customerId?: string;
     petId?: string;
+    pet_id?: string;
+    doctor_id?: string;
+    veterinarianId?: string;
     status?: string;
+    priority_level?: string;
     startDate?: string;
     endDate?: string;
     page?: number;

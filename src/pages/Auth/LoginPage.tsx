@@ -1,26 +1,17 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, Checkbox, message, Card, Divider, Row, Col } from 'antd';
-import { UserOutlined, LockOutlined, GoogleOutlined } from '@ant-design/icons';
+import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useHistory } from 'umi';
 import authService from '@/services/auth/authService';
 import { getDashboardPath } from '@/hooks/useAuthRedirect';
 import './LoginPage.less';
-
-interface LoginFormData {
-    username: string;
-    password: string;
-    rememberMe?: boolean;
-}
 
 const LoginPage: React.FC = () => {
     const [form] = Form.useForm();
     const history = useHistory();
     const [loading, setLoading] = useState(false);
 
-    /**
-     * Handle traditional login
-     */
-    const onFinish = async (values: LoginFormData) => {
+    const onFinish = async (values: any) => {
         try {
             setLoading(true);
             await authService.login({
@@ -29,9 +20,8 @@ const LoginPage: React.FC = () => {
                 rememberMe: values.rememberMe,
             });
             message.success('Đăng nhập thành công!');
-            // Redirect dựa trên role
             const dashboardPath = getDashboardPath();
-            history.push(dashboardPath);
+            window.location.replace(window.location.origin + '/#' + dashboardPath);
         } catch (error: any) {
             message.error(error?.response?.data?.message || 'Đăng nhập thất bại. Vui lòng thử lại.');
         } finally {
@@ -39,14 +29,10 @@ const LoginPage: React.FC = () => {
         }
     };
 
-    /**
-     * Handle Keycloak login
-     */
     const handleKeycloakLogin = () => {
         try {
             const redirectUri = `${window.location.origin}/auth/callback`;
-            const loginUrl = authService.getKeycloakLoginUrl(redirectUri);
-            window.location.href = loginUrl;
+            window.location.href = authService.getKeycloakLoginUrl(redirectUri);
         } catch (error) {
             message.error('Khởi tạo Keycloak login thất bại');
         }
@@ -54,94 +40,39 @@ const LoginPage: React.FC = () => {
 
     return (
         <div className="login-page-container">
-            <Row justify="center" align="middle" style={{ minHeight: '100vh' }}>
-                <Col xs={22} sm={20} md={10} lg={8} xl={6}>
+            <Row justify="start" align="middle" className="login-row">
+                <Col xs={24} sm={20} md={10} lg={8} xl={7} className="login-col">
                     <Card className="login-page-card">
-                        {/* Header */}
                         <div className="login-page-header">
                             <h1>BenhVienABC</h1>
-                            <p>Hệ thống quản lý thú y</p>
+                            <p>Hệ thống quản lý thú y hiện đại</p>
                         </div>
 
-                        {/* Login Form */}
-                        <Form
-                            form={form}
-                            layout="vertical"
-                            onFinish={onFinish}
-                            autoComplete="off"
-                            size="large"
-                        >
-                            <Form.Item
-                                name="username"
-                                label="Tên đăng nhập"
-                                rules={[
-                                    { required: true, message: 'Vui lòng nhập tên đăng nhập' },
-                                    { min: 3, message: 'Tên đăng nhập phải từ 3 ký tự' },
-                                ]}
-                            >
-                                <Input
-                                    prefix={<UserOutlined />}
-                                    placeholder="Tên đăng nhập"
-                                    disabled={loading}
-                                />
+                        <Form form={form} layout="vertical" onFinish={onFinish} autoComplete="off" size="large" requiredMark={false}>
+                            <Form.Item name="username" label="Tên đăng nhập" rules={[{ required: true, message: 'Vui lòng nhập tên đăng nhập' }]}>
+                                <Input prefix={<UserOutlined />} placeholder="Tên đăng nhập" disabled={loading} />
                             </Form.Item>
 
-                            <Form.Item
-                                name="password"
-                                label="Mật khẩu"
-                                rules={[{ required: true, message: 'Vui lòng nhập mật khẩu' }]}
-                            >
-                                <Input.Password
-                                    prefix={<LockOutlined />}
-                                    placeholder="Mật khẩu"
-                                    disabled={loading}
-                                />
+                            <Form.Item name="password" label="Mật khẩu" rules={[{ required: true, message: 'Vui lòng nhập mật khẩu' }]}>
+                                <Input.Password prefix={<LockOutlined />} placeholder="Mật khẩu" disabled={loading} />
                             </Form.Item>
 
-                            <Form.Item name="rememberMe" valuePropName="checked" initialValue={false}>
-                                <Checkbox>Ghi nhớ tôi</Checkbox>
+                            <Form.Item name="rememberMe" valuePropName="checked" initialValue={false} className="remember-me-item">
+                                <Checkbox>Ghi nhớ tài khoản</Checkbox>
                             </Form.Item>
 
                             <Form.Item>
-                                <Button
-                                    type="primary"
-                                    htmlType="submit"
-                                    block
-                                    size="large"
-                                    loading={loading}
-                                >
-                                    Đăng nhập
+                                <Button type="primary" htmlType="submit" block size="large" loading={loading} className="btn-submit">
+                                    Đăng nhập hệ thống
                                 </Button>
                             </Form.Item>
                         </Form>
 
-                        {/* Divider */}
-                        <Divider>Hoặc</Divider>
+                        <Divider className="custom-divider">Hoặc sử dụng cổng bảo mật</Divider>
 
-                        {/* Keycloak Login */}
-                        <Button
-                            type="default"
-                            block
-                            size="large"
-                            onClick={handleKeycloakLogin}
-                            disabled={loading}
-                            icon={<GoogleOutlined />}
-                        >
-                            Đăng nhập với Keycloak
-                        </Button>
 
-                        {/* Footer Links */}
                         <div className="login-page-footer">
-                            <p>
-                                Quên mật khẩu?{' '}
-                                <a href="/forgot-password">Đặt lại tại đây</a>
-                            </p>
-                            <p>
-                                Chưa có tài khoản?{' '}
-                                <a onClick={() => history.push('/auth/register')} style={{ cursor: 'pointer' }}>
-                                    Đăng kí ngay
-                                </a>
-                            </p>
+                            <p>Chưa có tài khoản? <a onClick={() => history.push('/auth/register')}>Đăng ký ngay</a></p>
                         </div>
                     </Card>
                 </Col>

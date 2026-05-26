@@ -56,8 +56,14 @@ export default [
 	},
 
 	// ===== BenhVienABC Admin/Doctor Routes =====
+	// Backward compatibility: /dashboard → /
 	// {
 	// 	path: '/dashboard',
+	// 	redirect: '/',
+	// },
+
+	// {
+	// 	path: '/Dashboard',
 	// 	name: 'Dashboard',
 	// 	component: './Dashboard/Dashboard',
 	// 	icon: 'DashboardOutlined',
@@ -73,47 +79,102 @@ export default [
 	{
 		path: '/pets',
 		name: 'Quản lý thú cưng',
-		component: './Pets/PetList',
 		icon: 'TeamOutlined',
+		access: 'adminAndDoctor', // Chỉ ADMIN và DOCTOR
+		routes: [
+			{
+				path: '/pets',
+				component: './Pets/PetList',
+			},
+			{
+				path: '/pets/:id',
+				component: './Pets/PetDetail',
+				hideInMenu: true,
+			},
+			{
+				path: '/pets/edit/:id',
+				component: './Pets/PetList',
+				hideInMenu: true,
+			},
+		],
 	},
 
 	{
 		path: '/appointments',
 		name: 'Quản lý lịch hẹn',
 		icon: 'CalendarOutlined',
+		access: 'adminAndDoctor', // Chỉ ADMIN và DOCTOR thấy menu chính
 		routes: [
 			{
 				path: '/appointments/calendar',
 				name: 'Lịch hẹn',
 				component: './Appointments/AppointmentCalendar',
+				access: 'adminAndDoctor', // Chỉ ADMIN và DOCTOR
 			},
 			{
 				path: '/appointments/booking',
 				name: 'Đặt lịch',
 				component: './Appointments/AppointmentBooking',
+				access: 'doctorBooking', // Tất cả NGOẠI TRỪ DOCTOR
 			},
 		],
 	},
 
-	{
-		path: '/medical-records',
-		name: 'Quản lý bệnh án',
-		component: './MedicalRecords/MedicalRecordsTimeline',
-		icon: 'FileTextOutlined',
-	},
+	// {
+	// 	path: '/medical-records',
+	// 	name: 'Quản lý bệnh án',
+	// 	component: './MedicalRecords/MedicalRecordsTimeline',
+	// 	icon: 'FileTextOutlined',
+	// },
 	{
 		path: '/users',
 		name: 'Quản lý người dùng',
 		component: './Users/UserList',
 		icon: 'TeamOutlined',
+		access: 'adminOnly', // Chỉ ADMIN
 	},
 
 
-	// ===== Customer Routes =====
-	// Redirect /customer-dashboard → / (HomePage sẽ render CustomerDashboard dựa trên role)
+	// ===== Customer-only Routes =====
 	{
-		path: '/customer-dashboard',
-		redirect: '/',
+		path: '/booking',
+		name: 'Đặt lịch',
+		component: './Appointments/AppointmentBooking',
+		icon: 'CalendarOutlined',
+		access: 'customerAccess', // Chỉ CUSTOMER
+	},
+
+	{
+		path: '/profile',
+		name: 'Thông tin cá nhân',
+		component: './CustomerDashboard/CustomerDashboard',
+		icon: 'UserOutlined',
+		hideInMenu: true, // Ẩn khỏi menu, chỉ truy cập trực tiếp
+		access: 'customerAccess',
+	},
+
+	// ===== Customer Pet Management =====
+	{
+		path: '/my-pets',
+		name: 'Thú cưng của tôi',
+		component: './MyPets/MyPetList',
+		icon: 'TeamOutlined',
+		access: 'customerAccess', // Chỉ CUSTOMER
+	},
+	{
+		path: '/my-pets/:id',
+		component: './MyPets/MyPetDetail',
+		hideInMenu: true,
+		access: 'customerAccess',
+	},
+
+	// ===== Customer Appointments Management =====
+	{
+		path: '/my-appointments',
+		name: 'Lịch hẹn của tôi',
+		component: './Appointments/MyAppointments',
+		icon: 'CalendarOutlined',
+		access: 'customerAccess', // Chỉ CUSTOMER
 	},
 
 	// ===== Error & Fallback Routes =====

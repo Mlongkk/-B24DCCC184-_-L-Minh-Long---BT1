@@ -13,10 +13,10 @@ import {
     Avatar,
     Drawer,
     Divider,
-    Badge,
     Tooltip,
     Row,
     Col,
+    Modal,
 } from 'antd';
 import {
     EditOutlined,
@@ -26,6 +26,7 @@ import {
     MailOutlined,
     PhoneOutlined,
     UserOutlined,
+    UserAddOutlined,
 } from '@ant-design/icons';
 import userService from '@/services/users/userService';
 import { UserRole } from '@/models/auth';
@@ -40,7 +41,20 @@ const UserList: React.FC = () => {
     const [roleFilter, setRoleFilter] = useState<UserRole | undefined>();
     const [drawerVisible, setDrawerVisible] = useState(false);
     const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
+    const [createModalVisible, setCreateModalVisible] = useState(false);
     const [form] = Form.useForm();
+    const [createForm] = Form.useForm();
+
+    // Phone validation: only allow 10 or 11 digit numbers starting with 0
+    const validatePhone = (_: any, value: string) => {
+        if (!value) return Promise.resolve();
+
+        const phoneRegex = /^0\d{9,10}$/;
+        if (!phoneRegex.test(value)) {
+            return Promise.reject(new Error('Số điện thoại phải bắt đầu bằng 0 và có 10 hoặc 11 chữ số'));
+        }
+        return Promise.resolve();
+    };
 
     const fetchUsers = useCallback(async () => {
         try {
@@ -49,25 +63,21 @@ const UserList: React.FC = () => {
                 search: searchText,
                 role: roleFilter,
                 page: pagination.current,
-                pageSize: pagination.pageSize,
+                limit: pagination.pageSize,
             });
 
             console.log('API Response:', response);
 
             // Ensure data is always an array with roles field
-            let usersData = Array.isArray(response.data) ? response.data : response.data?.data || [];
+            let usersData = Array.isArray(response?.data) ? response.data : [];
 
-            const processedUsers = usersData.map((user: any) => {
-                console.log('User data:', user);
-                return {
-                    ...user,
-                    roles: Array.isArray(user.roles) ? user.roles : user.role ? [user.role] : [],
-                };
-            });
+            const processedUsers = usersData.map((user: any) => ({
+                ...user,
+                roles: Array.isArray(user.roles) ? user.roles : user.role ? [user.role] : [],
+            }));
 
-            console.log('Processed users:', processedUsers);
             setUsers(processedUsers);
-            setPagination((prev) => ({ ...prev, total: response.total }));
+            setPagination((prev) => ({ ...prev, total: response.pagination?.total || 0 }));
         } catch (error) {
             console.error('Lỗi khi tải danh sách người dùng', error);
             message.error('Lỗi khi tải danh sách người dùng');
@@ -83,13 +93,22 @@ const UserList: React.FC = () => {
 
     const handleEdit = (user: UserProfile) => {
         setSelectedUser(user);
-        form.setFieldsValue({
-            fullName: user.fullName,
-            phone: user.phone,
-            roles: user.roles?.[0], // Get first role from array as string
-        });
         setDrawerVisible(true);
     };
+
+    // Populate form when drawer opens and user is selected
+    useEffect(() => {
+        if (drawerVisible && selectedUser) {
+            form.setFieldsValue({
+                username: selectedUser.username || '',
+                fullName: selectedUser.fullName || '',
+                phone: selectedUser.phone || '',
+                roles: selectedUser.roles?.[0] || undefined,
+            });
+        } else if (!drawerVisible) {
+            form.resetFields();
+        }
+    }, [drawerVisible, selectedUser, form]);
 
     const handleDelete = async (userId: string) => {
         try {
@@ -105,9 +124,11 @@ const UserList: React.FC = () => {
         if (!selectedUser) return;
 
         try {
+            setLoading(true);
             console.log('Form values:', values);
 
             const response = await userService.updateUser(selectedUser.id, {
+                username: values.username,
                 fullName: values.fullName,
                 phone: values.phone,
                 roles: values.roles ? [values.roles] : [], // Convert string to array
@@ -123,6 +144,35 @@ const UserList: React.FC = () => {
         } catch (error: any) {
             console.error('Update error:', error);
             message.error(error.response?.data?.message || 'Lỗi khi cập nhật người dùng');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleCreateUser = async (values: any) => {
+        try {
+            setLoading(true);
+            console.log('Creating user with values:', values);
+
+            const createResponse = await userService.createUser({
+                username: values.username,
+                email: values.email,
+                password: values.password,
+                full_name: values.fullName,
+                phone: values.phone,
+            });
+
+            console.log('Create user response:', createResponse);
+
+            message.success('Tạo người dùng thành công');
+            setCreateModalVisible(false);
+            createForm.resetFields();
+            fetchUsers();
+        } catch (error: any) {
+            console.error('Create user error:', error);
+            message.error(error.response?.data?.message || 'Lỗi khi tạo người dùng');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -130,8 +180,8 @@ const UserList: React.FC = () => {
         switch (role) {
             case UserRole.ADMIN:
                 return 'red';
-            case UserRole.VET:
-                return 'blue';
+            case UserRole.DOCTOR:
+                return 'purple';
             case UserRole.CUSTOMER:
                 return 'green';
             default:
@@ -143,7 +193,7 @@ const UserList: React.FC = () => {
         switch (role) {
             case UserRole.ADMIN:
                 return 'Quản trị viên';
-            case UserRole.VET:
+            case UserRole.DOCTOR:
                 return 'Bác sĩ';
             case UserRole.CUSTOMER:
                 return 'Khách hàng';
@@ -152,10 +202,19 @@ const UserList: React.FC = () => {
         }
     };
 
+    const getRoleTagRenderer = (role: UserRole) => {
+        return (
+            <Tag color={getRoleColor(role)}>
+                {getRoleDisplay(role)}
+            </Tag>
+        );
+    };
+
     const columns: any[] = [
         {
             title: 'Tên người dùng',
             key: 'username',
+            
             render: (_: any, record: UserProfile) => (
                 <div className={styles.userCell}>
                     <Avatar
@@ -193,7 +252,7 @@ const UserList: React.FC = () => {
             title: 'Vai trò',
             dataIndex: 'roles',
             key: 'roles',
-            width: 200,
+            width: 80,
             render: (roles: UserRole[] | undefined) => (
                 <Space wrap>
                     {roles && roles.length > 0 ? (
@@ -226,7 +285,7 @@ const UserList: React.FC = () => {
         {
             title: 'Hành động',
             key: 'action',
-            width: 150,
+            width: 80,
             render: (_: any, record: UserProfile) => (
                 <Space size='small'>
                     <Tooltip title='Sửa'>
@@ -259,9 +318,18 @@ const UserList: React.FC = () => {
                     <h1 className={styles.title}>
                         <UserOutlined /> Quản lý người dùng
                     </h1>
-                    <Button type='primary' icon={<ReloadOutlined />} onClick={fetchUsers} loading={loading}>
-                        Làm mới
-                    </Button>
+                    <Space>
+                        <Button
+                            type='primary'
+                            icon={<UserAddOutlined />}
+                            onClick={() => setCreateModalVisible(true)}
+                        >
+                            Tạo mới
+                        </Button>
+                        <Button type='primary' icon={<ReloadOutlined />} onClick={fetchUsers} loading={loading}>
+                            Làm mới
+                        </Button>
+                    </Space>
                 </div>
 
                 <Divider />
@@ -292,7 +360,7 @@ const UserList: React.FC = () => {
                                 }}
                                 options={[
                                     { label: 'Quản trị viên', value: UserRole.ADMIN },
-                                    { label: 'Bác sĩ', value: UserRole.VET },
+                                    { label: 'Bác sĩ', value: UserRole.DOCTOR },
                                     { label: 'Khách hàng', value: UserRole.CUSTOMER },
                                 ]}
                             />
@@ -312,8 +380,9 @@ const UserList: React.FC = () => {
                         showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} người dùng`,
                     }}
                     onChange={(page) => {
+                        const pageSizeChanged = page.pageSize !== pagination.pageSize;
                         setPagination({
-                            current: page.current || 1,
+                            current: pageSizeChanged ? 1 : (page.current || 1),
                             pageSize: page.pageSize || 10,
                             total: pagination.total,
                         });
@@ -340,7 +409,6 @@ const UserList: React.FC = () => {
                     form={form}
                     layout='vertical'
                     onFinish={handleSave}
-                    initialValues={selectedUser || {}}
                 >
                     {selectedUser && (
                         <>
@@ -358,25 +426,38 @@ const UserList: React.FC = () => {
                                 <div className={styles.profileInfo}>
                                     <h3>{selectedUser.username}</h3>
                                     <p>{selectedUser.email}</p>
-                                    <Badge
-                                        status={selectedUser.isActive ? 'success' : 'error'}
-                                        text={selectedUser.isActive ? 'Hoạt động' : 'Vô hiệu'}
-                                    />
                                 </div>
                             </div>
 
                             <Divider />
 
-                            <Form.Item label='Email' name='email'>
-                                <Input prefix={<MailOutlined />} />
-                            </Form.Item>
-
-                            <Form.Item label='Họ tên' name='fullName'>
+                            <Form.Item
+                                label='Tên đăng nhập'
+                                name='username'
+                                rules={[{ required: true, message: 'Vui lòng nhập tên đăng nhập' }]}
+                            >
                                 <Input />
                             </Form.Item>
 
-                            <Form.Item label='Điện thoại' name='phone'>
-                                <Input prefix={<PhoneOutlined />} />
+                            <Form.Item
+                                label='Họ tên'
+                                name='fullName'
+                                rules={[{ required: true, message: 'Vui lòng nhập họ tên' }]}
+                            >
+                                <Input />
+                            </Form.Item>
+
+                            <Form.Item
+                                label='Điện thoại'
+                                name='phone'
+                                rules={[
+                                    { validator: validatePhone }
+                                ]}
+                            >
+                                <Input
+                                    prefix={<PhoneOutlined />}
+                                    placeholder='VD: 0123456789 (10-11 chữ số)'
+                                />
                             </Form.Item>
 
                             <Form.Item
@@ -386,17 +467,19 @@ const UserList: React.FC = () => {
                             >
                                 <Select
                                     placeholder='Chọn vai trò'
+                                    optionLabelProp="label"
+                                    allowClear
                                     options={[
-                                        { label: 'Quản trị viên', value: UserRole.ADMIN },
-                                        { label: 'Bác sĩ', value: UserRole.VET },
-                                        { label: 'Khách hàng', value: UserRole.CUSTOMER },
+                                        { label: getRoleTagRenderer(UserRole.ADMIN), value: UserRole.ADMIN },
+                                        { label: getRoleTagRenderer(UserRole.DOCTOR), value: UserRole.DOCTOR },
+                                        { label: getRoleTagRenderer(UserRole.CUSTOMER), value: UserRole.CUSTOMER },
                                     ]}
                                 />
                             </Form.Item>
 
                             <div className={styles.drawerFooter}>
                                 <Button onClick={() => setDrawerVisible(false)}>Hủy</Button>
-                                <Button type='primary' htmlType='submit'>
+                                <Button type='primary' htmlType='submit' loading={loading}>
                                     Lưu thay đổi
                                 </Button>
                             </div>
@@ -404,6 +487,88 @@ const UserList: React.FC = () => {
                     )}
                 </Form>
             </Drawer>
+
+            {/* Create User Modal */}
+            <Modal
+                title='Tạo người dùng mới'
+                visible={createModalVisible}
+                onCancel={() => {
+                    setCreateModalVisible(false);
+                    createForm.resetFields();
+                }}
+                footer={[
+                    <Button key='cancel' onClick={() => {
+                        setCreateModalVisible(false);
+                        createForm.resetFields();
+                    }}>
+                        Hủy
+                    </Button>,
+                    <Button key='submit' type='primary' loading={loading} onClick={() => createForm.submit()}>
+                        Tạo
+                    </Button>,
+                ]}
+                width={600}
+            >
+                <Form
+                    form={createForm}
+                    layout='vertical'
+                    onFinish={handleCreateUser}
+                >
+                    <Form.Item
+                        label='Tên đăng nhập'
+                        name='username'
+                        rules={[
+                            { required: true, message: 'Vui lòng nhập tên đăng nhập' },
+                            { min: 3, message: 'Tên đăng nhập ít nhất 3 ký tự' }
+                        ]}
+                    >
+                        <Input placeholder='VD: john_doe' />
+                    </Form.Item>
+
+                    <Form.Item
+                        label='Email'
+                        name='email'
+                        rules={[
+                            { required: true, message: 'Vui lòng nhập email' },
+                            { type: 'email', message: 'Email không hợp lệ' }
+                        ]}
+                    >
+                        <Input placeholder='VD: user@example.com' />
+                    </Form.Item>
+
+                    <Form.Item
+                        label='Mật khẩu'
+                        name='password'
+                        rules={[
+                            { required: true, message: 'Vui lòng nhập mật khẩu' },
+                            { min: 6, message: 'Mật khẩu ít nhất 6 ký tự' }
+                        ]}
+                    >
+                        <Input.Password placeholder='Nhập mật khẩu' />
+                    </Form.Item>
+
+                    <Form.Item
+                        label='Họ tên'
+                        name='fullName'
+                        rules={[{ required: true, message: 'Vui lòng nhập họ tên' }]}
+                    >
+                        <Input placeholder='VD: Nguyễn Văn A' />
+                    </Form.Item>
+
+                    <Form.Item
+                        label='Điện thoại'
+                        name='phone'
+                        rules={[
+                            { validator: validatePhone }
+                        ]}
+                    >
+                        <Input
+                            placeholder='VD: 0123456789 (10-11 chữ số)'
+                            prefix={<PhoneOutlined />}
+                        />
+                    </Form.Item>
+                </Form>
+            </Modal>
         </div>
     );
 };
