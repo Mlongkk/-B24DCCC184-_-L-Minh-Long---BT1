@@ -261,7 +261,7 @@ window.location.reload()
 
 ### Frontend (tự động detect)
 - **Localhost**: Dùng `http://localhost:4000/api`
-- **Production** (https://quan-ly-benh-vien-thu-y-abc.netlify.app): Dùng `https://ript1307-nhom-4-kthp-backend-production.up.railway.app/api`
+- **Production** (https://quan-ly-benh-vien-thu-y-ab.netlify.app): Dùng `https://ript1307-nhom-4-kthp-backend-production.up.railway.app/api`
 
 ### Backend (cần cấu hình)
 ```env
